@@ -13,7 +13,7 @@ export const bannerStyles = {
   featureItem: "bg-white bg-opacity-80 backdrop-blur-sm rounded-xl p-2 sm:p-3 flex flex-col items-center shadow-sm border border-teal-50 hover:shadow-md transition-shadow",
   featureText: "text-gray-700 font-medium text-xs sm:text-sm",
   imageContainer: "z-10 max-w-xs sm:max-w-sm md:max-w-md lg:max-w-md w-full transform transition-transform duration-500 hover:scale-[1.02]",
-  imageInner: "rounded-xl overflow-hidden w-full h-48 sm:h-56 md:h-64 lg:h-[350px] shadow-lg border-4 border-white"
+  imageInner: "rounded-xl overflow-hidden w-full h-48 sm:h-56 md:h-64 lg:h-[300px] shadow-lg border-4 border-white"
 };
 
 
