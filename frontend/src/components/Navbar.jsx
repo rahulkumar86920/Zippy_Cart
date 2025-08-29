@@ -1,14 +1,38 @@
-import React, { useState } from "react";
+import React, { use, useRef, useState } from "react";
 import { navbarStyles } from "../assets/dummyStyles";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/wide_Assortment.png";
 import { FaOpencart } from 'react-icons/fa';
 import { navItems } from '../assets/Dummy'
+import { FiUser } from "react-icons/fi";
+import { useCart } from "../pages/CartContext";
 
 const Navbar = () => {
+
   const location = useLocation();
+  const navigate = useNavigate();
+  const { cartCount } = useCart();
+
   const [scrolled, setscrolled] = useState();
   const [activeTab, setactiveTab] = useState(location.pathname);
+  const [Isopen, setIsOpen] = useState(false);
+  const [cartBounce, setCartBounce] = useState(false)
+  const prevCartCounterRef = useRef(cartCount)
+
+
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    Boolean(localStorage.getItem("authToken"))
+  )
+  const mobileMenuRef = useRef(null);
+
+  // handle logout function
+  const handleLogout = () => {
+    localStorage.removeItem("authToken")
+    localStorage.removeItem("userData")
+    localStorage.clear()
+    window.dispatchEvent(new Event("authStateChanged"))
+    navigate("/")
+  }
 
   return (
     <nav
@@ -74,6 +98,31 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
+          {/**mobile hamburger*/}
+          <div className={navbarStyles.iconsContainer}>
+            {isLoggedIn ? (
+
+              <button onClick={handleLogout}
+                aria-level="Logout">
+                <FiUser className={navbarStyles.loginIcon} />
+                <span className="ml-1 text-white">Logout</span>
+              </button>
+            ) : (
+              <Link to="login" className={navbarStyles.loginLink}>
+                <FiUser className={navbarStyles.loginIcon} />
+                <span className="ml-2 text-white">Logout</span>
+              </Link>
+            )
+            }
+            {/**this for the cart icon */}
+            <Link to="/cart" className={navbarStyles.cartLink}>
+              <FaOpencart className={`${navbarStyles.cartIcon} ${cartBounce ? "animate-bounce" : " "}`} />
+              {cartCount > 0 && (
+                <span className={navbarStyles.cartBadge}>{cartCount}</span>
+              )}
+            </Link>
+          </div>
+
         </div>
       </div>
     </nav>
