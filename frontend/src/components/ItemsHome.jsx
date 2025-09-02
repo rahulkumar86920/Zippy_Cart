@@ -1,84 +1,71 @@
-import React, { useEffect, useState } from "react";
-import { itemsHomeStyles } from "../assets/dummyStyles";
-import BannerHome from "./BannerHome";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "../pages/CartContext";
-import { FaMinus, FaPlus, FaShoppingCart, FaThList } from "react-icons/fa";
-import { categories, products } from "../assets/dummyData.jsx";
+import React, { useEffect, useState } from "react"
+import { itemsHomeStyles } from "../assets/dummyStyles"
+import BannerHome from "./BannerHome"
+import { useNavigate } from "react-router-dom"
+import { useCart } from "../pages/CartContext"
+import { FaChevronRight, FaMinus, FaPlus, FaShoppingCart, FaThList } from "react-icons/fa"
+import { categories, products } from "../assets/dummyData.jsx"
 
 function ItemsHome() {
   const [activeCategory, setActiveCategory] = useState(() => {
-    return localStorage.getItem("activeCategory" || "ALL");
-  });
+    return localStorage.getItem("activeCategory") || "All"
+  })
+
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
-    localStorage.setItem("activeCategory", activeCategory);
-  }, [activeCategory]);
+    localStorage.setItem("activeCategory", activeCategory)
+  }, [activeCategory])
 
-  const navigate = useNavigate();
-  const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
+  const navigate = useNavigate()
+  const { cart, addToCart, updateQuantity, removeFromCart } = useCart()
 
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // search feature 
+  // Match products to search term
   const productMatchSearch = (product, term) => {
-    if (!term) return true;
-    const cleanTerm = term.trim().toLowerCase();
+    if (!term) return true
+    const cleanTerm = term.trim().toLowerCase()
     const searchWords = cleanTerm.split(/\s+/)
-
-    return searchWords.every(word =>
-      product.name.toLowerCase().inclues(word))
+    return searchWords.every((word) => product.name.toLowerCase().includes(word))
   }
 
-  // serach across all the products 
+  // Filter products
   const searchedProducts = searchTerm
-    ? products.filter(product =>
-      productMatchSearch(product, searchTerm))
-    : (activeCategory === "All"
-      ? products : products.filter((product) => product.category === activeCategory))
-
+    ? products.filter((product) => productMatchSearch(product, searchTerm))
+    : activeCategory === "All"
+    ? products
+    : products.filter((product) => product.category === activeCategory)
 
   const getQuantity = (productId) => {
     const item = cart.find((ci) => ci.id === productId)
-    return item ? item.quantity : 0;
+    return item ? item.quantity : 0
   }
 
-  // code to incese the quantity of the item in the cart page
-  const handleIncrease = (product) => addToCart(product, 1);
+  const handleIncrease = (product) => addToCart(product, 1)
 
-  // code to decrease the quantity of the iten from the cart 
   const handleDecrease = (product) => {
-    console.log("product", product)
-    const qtr = getQuantity(product.id) 
-    console.log("qtr", qtr)
-    if (qtr > 1) updateQuantity(product.id, qtr - 1)
+    const qty = getQuantity(product.id)
+    if (qty > 1) updateQuantity(product.id, qty - 1)
     else removeFromCart(product.id)
   }
 
-  // redirect to / items 
-  const redirectToItems = () => {
-    navigate('/items', { state: { category: activeCategory } })
+  const handleSearch = (term) => {
+    setSearchTerm(term)
   }
 
-  const handleSerach = (term) => {
-    SetSearchTerm(term);
-  };
-
-  // create side bar categories
+  // Sidebar categories
   const sidebarCategories = [
-    {
-      name: "All Items",
-      icon: <FaThList className="text-lg" />,
-      value: "All",
-    },
+    { name: "All Items", icon: <FaThList className="text-lg" />, value: "All" },
     ...categories,
-  ];
+  ]
 
   return (
     <div className={itemsHomeStyles.page}>
-      {/* <BannerHome onsearch={handleSerach}/> */}
+      
+      {/* Banner with search */}
+      <BannerHome onSearch={handleSearch} />
 
       <div className="flex flex-col lg:flex-row flex-1">
+        {/* Sidebar */}
         <aside className={itemsHomeStyles.sidebar}>
           <div className={itemsHomeStyles.sidebarHeader}>
             <h1
@@ -99,20 +86,20 @@ function ItemsHome() {
                 <li key={category.name}>
                   <button
                     onClick={() => {
-                      setActiveCategory(category.value || category.name);
-                      setSearchTerm("");
+                      setActiveCategory(category.value || category.name)
+                      setSearchTerm("")
                     }}
-                    className={`${itemsHomeStyles.categoryItem} ${activeCategory === (category.value || category.name) &&
+                    className={`${itemsHomeStyles.categoryItem} ${
+                      activeCategory === (category.value || category.name) &&
                       !searchTerm
-                      ? itemsHomeStyles.activeCategory
-                      : itemsHomeStyles.inactiveCategory
-                      }`}
+                        ? itemsHomeStyles.activeCategory
+                        : itemsHomeStyles.inactiveCategory
+                    }`}
                   >
                     <div className={itemsHomeStyles.categoryIcon}>
                       {category.icon}
                     </div>
                     <span className={itemsHomeStyles.categoryName}>
-                      {" "}
                       {category.name}
                     </span>
                   </button>
@@ -122,140 +109,140 @@ function ItemsHome() {
           </div>
         </aside>
 
-        {/* Main Content is written here */}
+        {/* Main Content */}
         <main className={itemsHomeStyles.mainContent}>
-          {/* mobile category scroll */}
-          <div className={itemsHomeStyles.mobileCategories}>
-            <div className="flex space-x-4">
-              {sidebarCategories.map((cat) => (
-                <button
-                  key={cat.name}
-                  onClick={() => {
-                    setActiveCategory(cat.value || cat.name);
-                    searchTerm(" ");
-                  }}
-                  className={`${itemsHomeStyles.mobileCategoryItem} ${activeCategory === (cat.value || cat.name) && !searchTerm
-                    ? itemsHomeStyles.activeMobileCategory
-                    : itemsHomeStyles.inactiveMobileCategory
-                    }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* Search Result  */}
+          {/* Search Result Info */}
           {searchTerm && (
             <div className={itemsHomeStyles.searchResults}>
               <div className="flex items-center justify-center">
                 <span className="text-emerald-700 font-medium">
-                  Serch Result for:{" "}
+                  Search Result for:{" "}
                   <span className="font-bold">{searchTerm}</span>
                 </span>
                 <button
-                  onClick={() => searchTerm(" ")}
-                  className="ml-4 text-emerald-700
-                 hover:text-shadow-emerald-700 p-1"
+                  onClick={() => setSearchTerm("")}
+                  className="ml-4 text-emerald-700 hover:text-shadow-emerald-700 p-1"
                 >
                   Clear
                 </button>
               </div>
             </div>
           )}
-          {/* section title  */}
+
+          {/* Section title */}
           <div className="text-center mb-6">
             <h1
               className={itemsHomeStyles.sectionTitle}
-              style={{
-                fontFamily: "' playfair Display',serif ",
-              }}
+              style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {searchTerm
-                ? "search Result "
+                ? "Search Results"
                 : activeCategory === "All"
-                  ? "Featured Product"
-                  : `${activeCategory} `}
+                ? "Featured Products"
+                : `${activeCategory}`}
             </h1>
             <div className={itemsHomeStyles.sectionDivider} />
-          </div >
+          </div>
 
-          {/* Products grid */}
+          {/* Products Grid */}
           <div className={itemsHomeStyles.productsGrid}>
-            {
-              searchedProducts.length > 0 ? (
-                searchedProducts.map((product) => {
-                  const qty = getQuantity(product.id)
-                  return (
-                    <div key={product.id}
-                      className={itemsHomeStyles.productCard}>
-                      <div className={itemsHomeStyles.productContent}>
-                        <img src={product.image} alt={product.name}
-                          className={itemsHomeStyles.productImage}
-                          onError={(e) => {
-                            e.target.onError = null
-                            e.target.parentNode.innerHTML = `
-                          <div className=" flex items-center justify-center w-full h-full bg-gray-200" >
-                          <span className="text-gray-500 text-sm">No image <span/>
-                          <div/>`
-                          }} />
-                      </div>
+            {searchedProducts.length > 0 ? (
+              searchedProducts.map((product) => {
+                const qty = getQuantity(product.id)
+                return (
+                  <div
+                    key={product.id}
+                    className={itemsHomeStyles.productCard}
+                  >
+                    <div className={itemsHomeStyles.productContent}>
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className={itemsHomeStyles.productImage}
+                        onError={(e) => {
+                          e.target.onerror = null
+                          e.target.parentNode.innerHTML = `
+                            <div class="flex items-center justify-center w-full h-full bg-gray-200">
+                              <span class="text-gray-500 text-sm">No image</span>
+                            </div>`
+                        }}
+                      />
+                    </div>
 
-                      <div className={itemsHomeStyles.productContent}>
+                    <div className={itemsHomeStyles.productContent}>
+                      <h3 className={itemsHomeStyles.productTitle}>
+                        {product.name}
+                      </h3>
 
-                        <h3 className={itemsHomeStyles.productTitle}>
-                          {product.name}
-                        </h3>
-
-                        <div className={itemsHomeStyles.priceContainer}>
-                          <div>
-                            <p className={itemsHomeStyles.currentPrice}>
-                              ₹{product.price.toFixed(2)}
-                            </p>
-
-                            <span className={itemsHomeStyles.oldPrice}>
-                              ₹{(product.price * 1.2).toFixed(2)}
-                            </span>
-
-                          </div>
-                          {/* add controls here */}
-                          {
-                            qty === 0 ? (
-                              <button onClick={() => handleIncrease(product)} className={itemsHomeStyles.addButton}>
-                                <FaShoppingCart className="mr-2" />
-                                Add
-                              </button>
-                            ) : (
-                              <div className={itemsHomeStyles.quantityControls}>
-                                <button onClick={() => handleDecrease(product)}
-                                  className={itemsHomeStyles.quantityButton}>
-                                  <FaMinus />
-                                </button>
-
-                                <span className="font-bold">{qty}</span>
-                                <button onClick={() => handleIncrease(product)} className={itemsHomeStyles.quantityButton}>
-                                  <FaPlus />
-                                </button>
-                              </div>
-                            )
-                          }
+                      <div className={itemsHomeStyles.priceContainer}>
+                        <div>
+                          <p className={itemsHomeStyles.currentPrice}>
+                            ₹{product.price.toFixed(2)}
+                          </p>
+                          <span className={itemsHomeStyles.oldPrice}>
+                            ₹{(product.price * 1.2).toFixed(2)}
+                          </span>
                         </div>
+
+                        {qty === 0 ? (
+                          <button
+                            onClick={() => handleIncrease(product)}
+                            className={itemsHomeStyles.addButton}
+                          >
+                            <FaShoppingCart className="mr-2" />
+                            Add
+                          </button>
+                        ) : (
+                          <div className={itemsHomeStyles.quantityControls}>
+                            <button
+                              onClick={() => handleDecrease(product)}
+                              className={itemsHomeStyles.quantityButton}
+                            >
+                              <FaMinus />
+                            </button>
+                            <span className="font-bold">{qty}</span>
+                            <button
+                              onClick={() => handleIncrease(product)}
+                              className={itemsHomeStyles.quantityButton}
+                            >
+                              <FaPlus />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  )
-                })
-              ) : (
-                <div className={itemsHomeStyles.noProducts}>
-                  <div className={itemsHomeStyles.noProductsText}>
-                    No Product Found
                   </div>
+                )
+              })
+            ) : (
+              <div className={itemsHomeStyles.noProducts}>
+                <div className={itemsHomeStyles.noProductsText}>
+                  No Product Found
                 </div>
-              )
-            }
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className={itemsHomeStyles.clearSearchButton}
+                >
+                  Clear Search
+                </button>
+              </div>
+            )}
           </div>
+
+          {/* View All Button */}
+          {!searchTerm && (
+            <div className="text-center">
+              <button className={itemsHomeStyles.viewAllButton}>
+                View All{" "}
+                {activeCategory === "All" ? "Products" : activeCategory}
+                <FaChevronRight className="ml-3" />
+              </button>
+            </div>
+          )}
         </main>
       </div>
     </div>
-  );
+  )
 }
 
-export default ItemsHome;
+export default ItemsHome
