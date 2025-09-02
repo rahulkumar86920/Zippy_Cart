@@ -118,6 +118,26 @@ function ItemsHome() {
 
         {/* Main Content */}
         <main className={itemsHomeStyles.mainContent}>
+               {/* mobile category scroll */}
+          <div className={itemsHomeStyles.mobileCategories}>
+            <div className="flex space-x-4">
+              {sidebarCategories.map((cat) => (
+                <button
+                  key={cat.name}
+                  onClick={() => {
+                    setActiveCategory(cat.value || cat.name);
+                    searchTerm(" ");
+                  }}
+                  className={`${itemsHomeStyles.mobileCategoryItem} ${activeCategory === (cat.value || cat.name) && !searchTerm
+                    ? itemsHomeStyles.activeMobileCategory
+                    : itemsHomeStyles.inactiveMobileCategory
+                    }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          </div>
           {/* Search Result Info */}
           {searchTerm && (
             <div className={itemsHomeStyles.searchResults}>
@@ -158,7 +178,7 @@ function ItemsHome() {
                 const qty = getQuantity(product.id);
                 return (
 
-                  //
+                  // jfdj
                   <div key={product.id} className={itemsHomeStyles.productCard}>
                     <div className={itemsHomeStyles.productContent}>
                       <img
