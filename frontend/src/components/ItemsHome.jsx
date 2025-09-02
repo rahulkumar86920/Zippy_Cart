@@ -1,66 +1,73 @@
-import React, { useEffect, useState } from "react"
-import { itemsHomeStyles } from "../assets/dummyStyles"
-import BannerHome from "./BannerHome"
-import { useNavigate } from "react-router-dom"
-import { useCart } from "../pages/CartContext"
-import { FaChevronRight, FaMinus, FaPlus, FaShoppingCart, FaThList } from "react-icons/fa"
-import { categories, products } from "../assets/dummyData.jsx"
+import React, { useEffect, useState } from "react";
+import { itemsHomeStyles } from "../assets/dummyStyles";
+import BannerHome from "./BannerHome";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../pages/CartContext";
+import {
+  FaChevronRight,
+  FaMinus,
+  FaPlus,
+  FaShoppingCart,
+  FaThList,
+} from "react-icons/fa";
+import { categories, products } from "../assets/dummyData.jsx";
 
 function ItemsHome() {
   const [activeCategory, setActiveCategory] = useState(() => {
-    return localStorage.getItem("activeCategory") || "All"
-  })
+    return localStorage.getItem("activeCategory") || "All";
+  });
 
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("activeCategory", activeCategory)
-  }, [activeCategory])
+    localStorage.setItem("activeCategory", activeCategory);
+  }, [activeCategory]);
 
-  const navigate = useNavigate()
-  const { cart, addToCart, updateQuantity, removeFromCart } = useCart()
+  const navigate = useNavigate();
+  const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
 
   // Match products to search term
   const productMatchSearch = (product, term) => {
-    if (!term) return true
-    const cleanTerm = term.trim().toLowerCase()
-    const searchWords = cleanTerm.split(/\s+/)
-    return searchWords.every((word) => product.name.toLowerCase().includes(word))
-  }
+    if (!term) return true;
+    const cleanTerm = term.trim().toLowerCase();
+    const searchWords = cleanTerm.split(/\s+/);
+    return searchWords.every((word) =>
+      product.name.toLowerCase().includes(word)
+    );
+  };
 
   // Filter products
   const searchedProducts = searchTerm
     ? products.filter((product) => productMatchSearch(product, searchTerm))
     : activeCategory === "All"
     ? products
-    : products.filter((product) => product.category === activeCategory)
+    : products.filter((product) => product.category === activeCategory);
 
   const getQuantity = (productId) => {
-    const item = cart.find((ci) => ci.id === productId)
-    return item ? item.quantity : 0
-  }
+    const item = cart.find((ci) => ci.id === productId);
+    return item ? item.quantity : 0;
+  };
 
-  const handleIncrease = (product) => addToCart(product, 1)
+  const handleIncrease = (product) => addToCart(product, 1);
 
   const handleDecrease = (product) => {
-    const qty = getQuantity(product.id)
-    if (qty > 1) updateQuantity(product.id, qty - 1)
-    else removeFromCart(product.id)
-  }
+    const qty = getQuantity(product.id);
+    if (qty > 1) updateQuantity(product.id, qty - 1);
+    else removeFromCart(product.id);
+  };
 
   const handleSearch = (term) => {
-    setSearchTerm(term)
-  }
+    setSearchTerm(term);
+  };
 
   // Sidebar categories
   const sidebarCategories = [
     { name: "All Items", icon: <FaThList className="text-lg" />, value: "All" },
     ...categories,
-  ]
+  ];
 
   return (
     <div className={itemsHomeStyles.page}>
-      
       {/* Banner with search */}
       <BannerHome onSearch={handleSearch} />
 
@@ -86,8 +93,8 @@ function ItemsHome() {
                 <li key={category.name}>
                   <button
                     onClick={() => {
-                      setActiveCategory(category.value || category.name)
-                      setSearchTerm("")
+                      setActiveCategory(category.value || category.name);
+                      setSearchTerm("");
                     }}
                     className={`${itemsHomeStyles.categoryItem} ${
                       activeCategory === (category.value || category.name) &&
@@ -148,23 +155,22 @@ function ItemsHome() {
           <div className={itemsHomeStyles.productsGrid}>
             {searchedProducts.length > 0 ? (
               searchedProducts.map((product) => {
-                const qty = getQuantity(product.id)
+                const qty = getQuantity(product.id);
                 return (
-                  <div
-                    key={product.id}
-                    className={itemsHomeStyles.productCard}
-                  >
+
+                  //
+                  <div key={product.id} className={itemsHomeStyles.productCard}>
                     <div className={itemsHomeStyles.productContent}>
                       <img
                         src={product.image}
                         alt={product.name}
-                        className={itemsHomeStyles.productImage}
+                        className={`${itemsHomeStyles.productImage} w-full h-40 object-cover rounded-md`}
                         onError={(e) => {
-                          e.target.onerror = null
+                          e.target.onerror = null;
                           e.target.parentNode.innerHTML = `
-                            <div class="flex items-center justify-center w-full h-full bg-gray-200">
-                              <span class="text-gray-500 text-sm">No image</span>
-                            </div>`
+        <div class="flex items-center justify-center w-full h-40 bg-gray-200 rounded-md">
+          <span class="text-gray-500 text-sm">No image</span>
+        </div>`;
                         }}
                       />
                     </div>
@@ -212,7 +218,7 @@ function ItemsHome() {
                       </div>
                     </div>
                   </div>
-                )
+                );
               })
             ) : (
               <div className={itemsHomeStyles.noProducts}>
@@ -242,7 +248,7 @@ function ItemsHome() {
         </main>
       </div>
     </div>
-  )
+  );
 }
 
-export default ItemsHome
+export default ItemsHome;
