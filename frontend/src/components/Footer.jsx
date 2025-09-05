@@ -96,7 +96,7 @@ const Footer = () => {
               {["Home", "Items", "Contact"].map((item, idx) => (
                 <li key={idx}>
                   <a
-                    href={`/${item.toLowerCase()}`}
+                    href={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
                     className={footerStyles.linkItem}
                   >
                     <span className={footerStyles.linkBullet}></span>
