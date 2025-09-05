@@ -10,13 +10,13 @@ const Signup = () => {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-        remember: false,
+        remember: true,
     })
 
     const [showPassword, setShowPassword] = useState(false)
 
     const [showToast, setShowToast] = useState(false)
-    const [errors, setErrors] = useState('')
+    const [errors, setErrors] = useState({})
     const Navigate = useNavigate();
 
     useEffect(() => {

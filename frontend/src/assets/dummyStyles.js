@@ -268,7 +268,7 @@ export const itemsPageStyles = {
   page: "min-h-screen bg-gradient-to-br from-emerald-900 to-emerald-950",
   container: "container mx-auto px-4 py-8",
   header: "mb-12 text-center py-8 relative",
-  backLink: "absolute top-5 left-0 flex items-center text-emerald-300 hover:text-emerald-100 cursor-pointer transition-colors",
+  backLink: "absolute top-12 left-0 flex items-center text-emerald-300 hover:text-emerald-100 cursor-pointer transition-colors",
   mainTitle: "text-5xl font-bold text-emerald-100 mt-7",
   titleSpan: "text-emerald-400 font-playfair",
   subtitle: "text-emerald-300 mt-4 max-w-2xl mx-auto text-lg",
