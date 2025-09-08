@@ -20,29 +20,30 @@ const CartPage = () => {
         }
     };
 
-    // if the cart is empty then this code will execute
-    if (cart.length === 0) {
-        return (
-            <div className={cartStyles.pageContainer}>
-                <div className={cartStyles.maxContainer}>
-                    <Link to="/items" className={cartStyles.continueShopping}>
-                        <FaArrowLeft className="mr-2" />
-                        Continue Shopping
+   // if the cart is empty then this code will execute
+if (cart.length === 0) {
+    return (
+        <div className={`${cartStyles.pageContainer} pt-25`}>  {/* Added padding */}
+            <div className={cartStyles.maxContainer}>
+                <Link to="/items" className={cartStyles.continueShopping}>
+                    <FaArrowLeft className="mr-2" />
+                    Continue Shopping
+                </Link>
+                <div className={cartStyles.emptyCartContainer}>
+                    <div className={cartStyles.emptyCartIcon}>🛒</div>
+                    <h1 className={cartStyles.emptyCartHeading}>Your Cart Is Empty</h1>
+                    <p className={cartStyles.emptyCartText}>
+                        Looks like you haven't added something in the cart yet :)
+                    </p>
+                    <Link to="/items" className={cartStyles.emptyCartButton}>
+                        Browse Product
                     </Link>
-                    <div className={cartStyles.emptyCartContainer}>
-                        <div className={cartStyles.emptyCartIcon}>🛒</div>
-                        <h1 className={cartStyles.emptyCartHeading}> Your Cart Is Empty</h1>
-                        <p className={cartStyles.emptyCartText}>
-                            Looks like you haven't added something in the cart yet :)
-                        </p>
-                        <Link to="/items" className={cartStyles.emptyCartButton}>
-                            Browse Product
-                        </Link>
-                    </div>
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
+}
+
 
     return (
         <div className={cartStyles.pageContainer}>
