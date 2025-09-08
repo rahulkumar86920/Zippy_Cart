@@ -147,21 +147,28 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-          {/**mobile hamburger*/}
+          {/* *if the user is login then he will see logout option else login  mobile*/}
           <div className={navbarStyles.iconsContainer}>
-            {isLoggedIn ? (
-              <button onClick={handleLogout} aria-level="Logout">
-                <FiUser className={navbarStyles.loginIcon} />
-                <span className="ml-1 text-white">Logout</span>
-              </button>
-            ) : (
-              <Link to="login" className={navbarStyles.loginLink}>
-                <FiUser className={navbarStyles.loginIcon} />
-                <span className="ml-2 text-white">
-                  Login
-                </span>
-              </Link>
-            )}
+              {isLoggedIn ? (
+  <button
+    onClick={handleLogout}
+
+    aria-label="Logout"
+    className={"hidden md:flex items-center rounded-full hover:bg-slate-700/50 transition-colors group"}
+  >
+    <FiUser className={navbarStyles.loginIcon} /> 
+    <span className="ml-1 text-white">Logout</span>
+  </button>
+) : (
+  <Link
+    to="login"
+    className={`${navbarStyles.loginLink} `}
+  >
+    <FiUser className={navbarStyles.loginIcon} />
+    <span className="ml-2 text-white">Login</span>
+  </Link>
+)}
+
             {/**this for the cart icon */}
             <Link to="/cart" className={navbarStyles.cartLink}>
               <FaOpencart
@@ -225,7 +232,7 @@ const Navbar = () => {
               className={navbarStyles.closeButton}
               aria-label="Close menu"
             >
-              <FiX className="h-6 w-6 text-white" />
+              <FiX className="h-6 w-6 text-white" />  
             </button>
           </div>
 
@@ -257,7 +264,7 @@ const Navbar = () => {
                   className={navbarStyles.loginButton}
                 >
                   <FiUser className={navbarStyles.loginButtonIcon} />
-                  Login
+                  Logout
                 </button>
               ) : (
                 <Link

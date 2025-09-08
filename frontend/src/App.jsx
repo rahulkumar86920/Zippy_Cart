@@ -40,7 +40,9 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/items' element={<Items />} />
+        
         {/*  for the cart page first will check if the user is login or not if not then user need to login first */}
+        {/* element={isAuthenticated ? <Cart /> : <Navigate replace to="/login" />}  */}
         <Route path='/cart' element={isAuthenticated ? <Cart /> : <Navigate replace to="/login" />} />
 
         {/* Auth Routes */}
