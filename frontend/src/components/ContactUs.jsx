@@ -156,22 +156,24 @@ const ContactUs = () => {
                         {/* message*/}
                         <div className={contactStyles.formField}>
                             <div className={contactStyles.inputContainer}>
-                                <div className={contactStyles.inputIconContainer}>
-                                    <FaComment className={contactStyles.inputIcon} />
+                                <div className={contactStyles.inputIconContainer} >
+                                    <FaComment className="h-5 w-5 text-emerald-400" />
                                 </div>
                                 <textarea name="message" id=" message" rows={5} value={formData.message}
-                                    onChange={handleChangne} className={contactStyles.formTextarea} placeholder="Type your message here" required>
-
+                                    onChange={handleChangne} className={contactStyles.formTextarea}
+                                    placeholder="Type your message here :)" required>
                                 </textarea>
+
                             </div>
                         </div>
 
                         {/* submit button */}
                         <button type="submit" className={contactStyles.submitButton}>
+                            <FaPaperPlane className="h-5 w-5 text-black mr-3" />
                             <span className={contactStyles.submitButtonText}>
                                 Send Message
-                                <FaPaperPlane className="h-5 w-5 text-black" />
                             </span>
+
                         </button>
 
                     </form>
