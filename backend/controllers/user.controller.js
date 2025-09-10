@@ -1,12 +1,14 @@
 import UserModel from "../models/user.model.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_secret_code";
 const TOKEN_EXPIRES = "24";
 
 const createToken = (userId) => {
-  jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES });
+    jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES });
 };
 
 // here register user function is written here
@@ -52,12 +54,14 @@ export async function registerUser(req, res) {
       email,
       password: hashed,
     });
+
     const token = createToken(user._id);
     res.status(201).json({
       success: true,
       error: false,
       user: { id: user, name: user.name, email: user.email },
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -80,7 +84,8 @@ export async function loginUser(req, res) {
   }
 
   try {
-    const user = UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
+
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -88,6 +93,7 @@ export async function loginUser(req, res) {
         message: "User does not exiest",
       });
     }
+
     // here first password is being decripted and matching with user entered password with database
     const match = await bcrypt.compare(password, user.password);
 
@@ -118,3 +124,5 @@ export async function loginUser(req, res) {
     });
   }
 }
+
+
