@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "melter": "^0.0.1",
     "mongoose": "^8.18.1",
+    "multer": "^2.0.2",
     "nodemon": "^3.1.10",
     "strive": "^0.4.0",
     "uuid": "^13.0.0",
