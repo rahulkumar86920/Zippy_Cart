@@ -179,7 +179,8 @@ const Item = () => {
         <div className={itemsPageStyles.page}>
             <div className={itemsPageStyles.container}>
                 <header className={itemsPageStyles.header}>
-                    <Link to="/" className={itemsPageStyles.backLink}>
+
+                    <Link to="/" className={`${itemsPageStyles.backLink} sm:mt-4`}>
                         <FiArrowLeft className="mr-2" />
                         <span>Back</span>
                     </Link>
