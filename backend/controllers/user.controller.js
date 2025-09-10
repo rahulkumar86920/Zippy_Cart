@@ -3,12 +3,12 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-
-const JWT_SECRET = process.env.JWT_SECRET || "jwt_secret_code";
-const TOKEN_EXPIRES = "24";
-
 const createToken = (userId) => {
-    jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: TOKEN_EXPIRES });
+   return jwt.sign(
+    { id: userId },               // payload
+    process.env.JWT_SECRET,       // secret key from .env
+    { expiresIn: process.env.TOKEN_EXPIRES || "1d" } // expiry
+  );
 };
 
 // here register user function is written here
@@ -59,9 +59,9 @@ export async function registerUser(req, res) {
     res.status(201).json({
       success: true,
       error: false,
+      token,
       user: { id: user, name: user.name, email: user.email },
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -110,6 +110,7 @@ export async function loginUser(req, res) {
     res.json({
       success: true,
       error: false,
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -124,5 +125,3 @@ export async function loginUser(req, res) {
     });
   }
 }
-
-

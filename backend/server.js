@@ -2,9 +2,10 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/connectDB.js";
 
-import "dotenv/config";
 import userRouter from "./routes/user.routes.js";
+import dotenv from "dotenv";
 
+import "dotenv/config";
 const app = express();
 // port number where our server is going to run
 const PORT = 8080 || process.env.PORT;
@@ -20,7 +21,7 @@ app.get("/", (req, res) => {
   res.send("Api is working");
 });
 
-app.use("/api/user", userRouter)
+app.use("/api/user", userRouter);
 
 //here calling the connect db function
 connectDB().then(() => {
