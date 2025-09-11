@@ -33,7 +33,7 @@ export const createProducts = async (req, res, next) => {
   }
 };
 
-// delete a product bt id
+// delete a product by id
 export const deleteProduct = async (req, res, next) => {
   try {
     const deleted = await productModel.findByIdAndDelete(req.params.id);
@@ -41,7 +41,7 @@ export const deleteProduct = async (req, res, next) => {
       res.status(404);
       throw new Error("Product not found");
     }
-    res.json({ message: "product deleted" });
+    res.json({ message: "product deleted successfully" });
   } catch (error) {
     next(error);
   }

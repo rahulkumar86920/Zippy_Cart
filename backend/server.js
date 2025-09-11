@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/user", userRouter); // register and login
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/items",itemrouter)
+app.use("/api/items", itemrouter); // cretae, get, and delete products
 
 //here calling the connect db function
 connectDB().then(() => {

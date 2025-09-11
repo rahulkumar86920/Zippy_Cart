@@ -5,7 +5,7 @@ dotenv.config();
 
 //code to chekc if the process dotenv has the mongo db url
 if (!process.env.MONGODB_URI) {
-  throw new Error("please provide the mongo db url in .env file");
+  throw new Error("please provide the mongo DB url in .env file");
 }
 
 // function to connect the database
