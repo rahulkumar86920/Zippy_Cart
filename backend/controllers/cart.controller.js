@@ -18,7 +18,7 @@ export const getCart = async (req, res, next) => {
 };
 
 //post method to add to cart item
-export const postCart = async (req, res, next) => {
+export const addToCart = async (req, res, next) => {
   try {
     const { productId, quantity, itemId } = req.body;
     const pId = productId || itemId;
