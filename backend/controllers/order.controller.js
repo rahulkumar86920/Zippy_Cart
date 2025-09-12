@@ -1,9 +1,9 @@
 import orderModel from "../models/order.model.js";
 import { v4 as uuidv4 } from "uuid";
-import Stripe from "stripe";
+import Stripe from 'stripe';
 
 // stripe for the online payment
-const Stripe = Stripe(process.env.STRIPE_SECRET_KEY)
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY)
 
 //create a new order
 export const createOrder = async (req, res) => {
@@ -79,7 +79,7 @@ export const createOrder = async (req, res) => {
     });
 
     await newOrder.save();
-    return res.status(201).json({ order: newOrder, checkoutUrl: null });
+     res.status(201).json({ order: newOrder, checkoutUrl: null });
   } catch (error) {
     console.log("create order error", error);
     res.status(500).json({ message: "server error ", error: error.message });
@@ -89,7 +89,7 @@ export const createOrder = async (req, res) => {
 // confirm stripe payment for the online payment method
 export const confirmPayment = async (req, res) => {
   try {
-    const { session_id } = req.body;
+    const { session_id } = req.query;
     if (!session_id)
       return res.status(400).json({ message: "session_id_required" });
     const session = await Stripe.checkout.sessions.retrieve(session_id);
@@ -124,7 +124,7 @@ export const getOrders = async (req, res, next) => {
 };
 
 //get orders by id
-export const getOrdersById = async (res, res, next) => {
+export const getOrdersById = async (req, res, next) => {
   try {
     const order = await orderModel.findById(req.params.id).lean();
     if (!order) {
