@@ -9,6 +9,8 @@ import { fileURLToPath } from "url";
 
 import "dotenv/config";
 import itemrouter from "./routes/product.routes.js";
+import authMiddleware from "./middleware/auth.js";
+import cartRouter from "./routes/cart.routes.js";
 const app = express();
 
 // port number where our server is going to run
@@ -29,6 +31,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRouter); // register and login
+app.use("api/cart", authMiddleware,cartRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/items", itemrouter); // cretae, get, and delete products
 
