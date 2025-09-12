@@ -1,7 +1,9 @@
 import mongoose, { VirtualType } from "mongoose";
-const orderItemSchema = new mongoose.Schema({
-  // Item sub‐schema
 
+
+const orderItemSchema = new mongoose.Schema({
+
+  // Item sub‐schema
   id: { type: String, required: true },
   name: { type: String, required: true },
   price: { type: Number, required: true, min: 0 },
@@ -12,7 +14,6 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema(
   {
     // Main schema
-
     orderId: { type: String, unique: true, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     customer: {
