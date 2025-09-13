@@ -50,7 +50,7 @@ const AddItemPage = () => {
         e.preventDefault();
 
         try {
-            const body = new formData();
+           const body = new FormData();
             body.append("name", formData.name);
             body.append("description", formData.description);
             body.append("category", formData.category);
@@ -70,7 +70,7 @@ const AddItemPage = () => {
             fileInputRef.current.value = "";
         } catch (error) {
             console.error(error);
-            alert("Upload falled");
+            alert("Upload failled");
         }
     };
 
