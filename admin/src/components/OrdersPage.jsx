@@ -52,7 +52,7 @@ const OrdersPage = () => {
       );
     }
 
-    if (statusFilter !== "ALL") {
+    if (statusFilter !== "All") {
       result = result.filter((order) => order.status === statusFilter);
     }
     setFilteredOrders(result);
@@ -90,7 +90,7 @@ const OrdersPage = () => {
     setIsDetailModalOpen(true);
   };
 
-  // clode model
+  // close model
   const closeModel = () => {
     setIsDetailModalOpen(false);
     setSelectedOrder(null);
@@ -164,6 +164,7 @@ const OrdersPage = () => {
             </div>
           </div>
         </div>
+
         {/* order table */}
         <div className={styles.contentContainer}>
           <div className="overflow-x-auto">
