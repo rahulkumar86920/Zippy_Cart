@@ -369,7 +369,7 @@ const OrdersPage = () => {
                           value={selectedOrder.status}
                           onChange={(e) => {
                             const newStatus = e.target.value;
-                            selectedOrder({
+                            setSelectedOrder({
                               ...selectedOrder,
                               status: newStatus,
                             });
@@ -379,9 +379,9 @@ const OrdersPage = () => {
                         >
                           {statusOptions
                             .filter((o) => o !== "All")
-                            .map((option) => (
-                              <option value={option} key={option}>
-                                {option}
+                            .map((options) => (
+                              <option value={options} key={options}>
+                                {options}
                               </option>
                             ))}
                         </select>
@@ -390,6 +390,7 @@ const OrdersPage = () => {
                   </div>
                 </div>
                 {/* right side */}
+
               </div>
             </div>
           </div>
