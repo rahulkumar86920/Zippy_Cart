@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { ordersPageStyles as styles } from "../assets/adminStyle";
-import { FiCheck, FiPackage, FiTruck, FiUser, FiX } from "react-icons/fi";
+import {
+  FiCheck,
+  FiEdit,
+  FiMail,
+  FiMapPin,
+  FiPackage,
+  FiPhone,
+  FiTruck,
+  FiUser,
+  FiX,
+} from "react-icons/fi";
 import { BsCurrencyRupee } from "react-icons/bs";
 import axios from "axios";
 
@@ -303,16 +313,83 @@ const OrdersPage = () => {
             {/* modal body */}
             <div className={styles.modalBody}>
               <div className={styles.modalGrid}>
-                {/* left side */}
 
+                {/* left side */}
                 <div>
                   <div className={styles.modalSection}>
                     <h3 className={styles.modalSectionTitle}>
                       <FiUser className={styles.modalIcon} />
                       Customer information
                     </h3>
+                    <div className={styles.modalInfoBox}>
+                      <div className="mb-3">
+                        <div className="font-medium">
+                          {selectedOrder.customer.name}
+                        </div>
+                        <div className="text-gray-600 flex item-center mt-1">
+                          <FiMail className="mr-2 flex-shrink-0" />
+                          {selectedOrder.customer.email || "No emial provided"}
+                        </div>
+                        <div className="text-gray-600 flex item-center mt-1">
+                          <FiPhone className="mr-2 flex-shrink-0" />
+                          {selectedOrder.customer.phone || "No phone provided"}
+                        </div>
+                        <div className="flex items-start mt-3">
+                          <FiMapPin className="text-gray-500 mr-2 mt-1 flex-shrink-0" />
+                          <div className="text-gray-600">
+                            {selectedOrder.customer.address}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* order notes */}
+                  {selectedOrder.notes && (
+                    <div className={styles.modalSection}>
+                      <h3 className={styles.modalSectionTitle}>
+                        <FiEdit className={styles.modalIcon} />
+                        Delivery Notes
+                      </h3>
+                      <div className={styles.modalNoteBox}>
+                        <p className="text-gray-700">{selectedOrder.notes}</p>
+                      </div>
+                    </div>
+                  )}
+                  {/* status control */}
+                  <div className={styles.modalSection}>
+                    <h3 className={styles.modalSectionTitle}>
+                      Update Order Status
+                    </h3>
+                    <div className={styles.modalStatusControl}>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700  mb-2">
+                          Order Status
+                        </label>
+                        <select
+                          value={selectedOrder.status}
+                          onChange={(e) => {
+                            const newStatus = e.target.value;
+                            selectedOrder({
+                              ...selectedOrder,
+                              status: newStatus,
+                            });
+                            updateOrdersStatus(selectedOrder._id, newStatus);
+                          }}
+                          className={styles.modalSelect}
+                        >
+                          {statusOptions
+                            .filter((o) => o !== "All")
+                            .map((option) => (
+                              <option value={option} key={option}>
+                                {option}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                {/* right side */}
               </div>
             </div>
           </div>
