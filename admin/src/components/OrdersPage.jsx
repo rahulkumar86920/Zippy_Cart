@@ -313,7 +313,6 @@ const OrdersPage = () => {
             {/* modal body */}
             <div className={styles.modalBody}>
               <div className={styles.modalGrid}>
-
                 {/* left side */}
                 <div>
                   <div className={styles.modalSection}>
@@ -390,7 +389,71 @@ const OrdersPage = () => {
                   </div>
                 </div>
                 {/* right side */}
-
+                <div>
+                  <div className={styles.modalSection}>
+                    <h3 className={styles.modalSectionTitle}>
+                      <FiPackage className={styles.modalIcon} />
+                      Order Summary
+                    </h3>
+                  </div>
+                  <div className={styles.modalOrderSummary}>
+                    {selectedOrder.items.map((item, index) => (
+                      <div
+                        key={item._id || index}
+                        className={styles.modalOrderItem(
+                          index,
+                          selectedOrder.items.length
+                        )}
+                      >
+                        {item.imageUrl ? (
+                          <img
+                            src={`http://localhost:8080${item.imageUrl}`}
+                            alt={item.name}
+                            className={styles.modalOrderImage}
+                          />
+                        ) : (
+                          <div className={styles.modalPlaceholderImage} />
+                        )}
+                        <div className="flex-grow">
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-gray-600">
+                            ₹{item.price.toFixed(2)} * {item.quantity}{" "}
+                          </div>
+                        </div>
+                        <div className="font-medium">
+                          ₹{(item.price * item.quantity).toFixed(2)}
+                        </div>
+                      </div>
+                    ))}
+                    {/* total order price */}
+                    <div className={styles.modalOrderTotalSection}>
+                      <div className={styles.modalOrderTotalRow}>
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="font-medium">
+                          ₹{selectedOrder.total.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className={styles.modalOrderTotalRow}>
+                        <span className="text-gray-600">Shipping</span>
+                        <span className="font-medium text-emerald-600">
+                          Free
+                        </span>
+                      </div>
+                      <div className={styles.modalOrderTotalRow}>
+                        <span className="text-gray-600">Tax (5%)</span>
+                        <span className="font-medium">
+                          ₹{(selectedOrder.total * 0.05).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className={styles.modalOrderTotalRowLast}>
+                        <span className="text-lg font-bold">Total</span>
+                        <span className="text-lg font-bold text-emerald-700">
+                          ₹{(selectedOrder.total * 1.05).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
