@@ -10,6 +10,7 @@ import {
   FiTruck,
   FiUser,
   FiX,
+  FiCreditCard,
 } from "react-icons/fi";
 import { BsCurrencyRupee } from "react-icons/bs";
 import axios from "axios";
@@ -293,9 +294,8 @@ const OrdersPage = () => {
         <div className={styles.modalOverlay}>
           <div className={styles.modalContainer}>
             {/* modal header */}
-
             <div className={styles.modalHeader}>
-              <div className="flrx justify-between items-center">
+              <div className="flex justify-between items-center">
                 <h2 className={styles.modalHeaderTitle}>Order details :</h2>
                 <button
                   onClick={closeModel}
@@ -453,8 +453,50 @@ const OrdersPage = () => {
                       </div>
                     </div>
                   </div>
+                  {/* payment information */}
+
+                  <div>
+                    <h3 className={styles.modalSectionTitle}>
+                      <FiCreditCard className={styles.modalIcon} />
+                      Paymnent information
+                    </h3>
+
+                    <div className={styles.modalInfoBox}>
+                      <div className="flex justify-between mb-3">
+                        <span className="text-gray-600">Payment Method:</span>
+                        <span className="font-medium">
+                          {selectedOrder.paymentMethod}
+                        </span>
+                      </div>
+
+                       <div className="flex justify-between">
+                        <span className="text-gray-600">Payment Status:</span>
+                        <span className={styles.paymentBadge(selectedOrder.paymentStatus)}>
+                          {selectedOrder.paymentStatus}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
+            {/* modal for the footer */}
+            <div className={styles.modalFooter}>
+                      <div className="flex justify-end space-x-3">
+                        <button 
+                        className={styles.modalFooterButton}
+                        onClick={closeModel}
+                        > 
+                      Close 
+                        </button>
+
+                        <button
+                         onClick={closeModel}
+                         className={styles.modalFooterPrimaryButton}
+                        >
+                            Save Changes
+                        </button>
+                      </div>
             </div>
           </div>
         </div>
