@@ -1,36 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import { Routes, Route, useLocation, Navigate, replace } from "react-router-dom"
-import Home from "./pages/Home.jsx"
-import { CartProvider } from './pages/CartContext.jsx'
-import Contact from './pages/Contact.jsx'
-import Items from './pages/Items.jsx'
-import Cart from './pages/Cart.jsx'
-import Login from './components/Login.jsx'
-import Logout from './components/Logout.jsx'
-import Signup from './components/Signup.jsx'
-import Navbar from './components/Navbar';
+import React, { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  useLocation,
+  Navigate,
+  replace,
+} from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import { CartProvider } from "./pages/CartContext.jsx";
+import Contact from "./pages/Contact.jsx";
+import Items from "./pages/Items.jsx";
+import Cart from "./pages/Cart.jsx";
+import Login from "./components/Login.jsx";
+import Logout from "./components/Logout.jsx";
+import Signup from "./components/Signup.jsx";
+import Navbar from "./components/Navbar";
+import MyOrder from "./components/MyOrder.jsx";
+import Checkout from "./components/Checkout.jsx";
 
 const ScrollToTop = () => {
   const { pathName } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0)
+    window.scrollTo(0, 0);
   }, [pathName]);
   return null;
-}
+};
 
 const App = () => {
-
   const [isAuthenticated, setIsAuthenticated] = useState(
     Boolean(localStorage.getItem("authToken"))
-  )
+  );
 
   useEffect(() => {
     const handler = () => {
-      setIsAuthenticated(Boolean(localStorage.getItem("authToken")))
-    }
-    window.addEventListener("authStateChanged", handler)
-    return () => window.removeEventListener("authStateChanged", handler)
-  }, [])
+      setIsAuthenticated(Boolean(localStorage.getItem("authToken")));
+    };
+    window.addEventListener("authStateChanged", handler);
+    return () => window.removeEventListener("authStateChanged", handler);
+  }, []);
 
   return (
     <CartProvider>
@@ -38,24 +45,30 @@ const App = () => {
       <Navbar isAuthenticated={isAuthenticated} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/items' element={<Items />} />
-        
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/items" element={<Items />} />
+
         {/*  for the cart page first will check if the user is login or not if not then user need to login first */}
         {/* element={isAuthenticated ? <Cart /> : <Navigate replace to="/login" />}  */}
-        <Route path='/cart' element={isAuthenticated ? <Cart /> : <Navigate replace to="/login" />} />
+        <Route
+          path="/cart"
+          element={
+            isAuthenticated ? <Cart /> : <Navigate replace to="/login" />
+          }
+        />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/myorders" element={<MyOrder />} />
 
         {/* Auth Routes */}
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/logout' element={<Logout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/logout" element={<Logout />} />
 
         {/* Fall back to the home  */}
-        <Route path='*' element={<Navigate replace to="/" />} />
-
+        <Route path="*" element={<Navigate replace to="/" />} />
       </Routes>
     </CartProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -469,9 +469,13 @@ const OrdersPage = () => {
                         </span>
                       </div>
 
-                       <div className="flex justify-between">
+                      <div className="flex justify-between">
                         <span className="text-gray-600">Payment Status:</span>
-                        <span className={styles.paymentBadge(selectedOrder.paymentStatus)}>
+                        <span
+                          className={styles.paymentBadge(
+                            selectedOrder.paymentStatus
+                          )}
+                        >
                           {selectedOrder.paymentStatus}
                         </span>
                       </div>
@@ -482,21 +486,21 @@ const OrdersPage = () => {
             </div>
             {/* modal for the footer */}
             <div className={styles.modalFooter}>
-                      <div className="flex justify-end space-x-3">
-                        <button 
-                        className={styles.modalFooterButton}
-                        onClick={closeModel}
-                        > 
-                      Close 
-                        </button>
+              <div className="flex justify-end space-x-3">
+                <button
+                  className={styles.modalFooterButton}
+                  onClick={closeModel}
+                >
+                  Close
+                </button>
 
-                        <button
-                         onClick={closeModel}
-                         className={styles.modalFooterPrimaryButton}
-                        >
-                            Save Changes
-                        </button>
-                      </div>
+                <button
+                  onClick={closeModel}
+                  className={styles.modalFooterPrimaryButton}
+                >
+                  Save Changes
+                </button>
+              </div>
             </div>
           </div>
         </div>
