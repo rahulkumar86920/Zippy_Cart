@@ -10,9 +10,12 @@ import {
   FaShoppingCart,
   FaThList,
 } from "react-icons/fa";
-import { categories, products } from "../assets/dummyData.jsx";
+import { categories } from "../assets/dummyData.jsx";
+import axios from "axios";
 
 function ItemsHome() {
+  const [products, setProducts] = useState([]);    
+
   const [activeCategory, setActiveCategory] = useState(() => {
     return localStorage.getItem("activeCategory") || "All";
   });
@@ -22,6 +25,20 @@ function ItemsHome() {
   useEffect(() => {
     localStorage.setItem("activeCategory", activeCategory);
   }, [activeCategory]);
+
+  // fatch products from backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/api/items")
+      .then((res) => {
+        const normalized = res.data.map((p) => ({
+          ...p,
+          id: p._id,
+        }));
+        setProducts(normalized);
+      })
+      .catch(console.error);
+  }, []);
 
   const navigate = useNavigate();
   const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
@@ -44,16 +61,38 @@ function ItemsHome() {
     : products.filter((product) => product.category === activeCategory);
 
   const getQuantity = (productId) => {
-    const item = cart.find((ci) => ci.id === productId);
+    const item = cart.find((ci) => ci.productId === productId);
     return item ? item.quantity : 0;
   };
+ 
+  const getLineItemId = (productId) => {
+    const item = cart.find((ci) => ci.productId === productId);
+    return item ? item.id : null;
+  };
 
-  const handleIncrease = (product) => addToCart(product, 1);
+  const handleIncrease = (product) => {
+    const lineId = getLineItemId(product._id);
+    console.log("product", product)
+    if (lineId) {
+      updateQuantity(lineId, getQuantity(product._id) + 1);
+    } else {
+      addToCart(product._id, 1);
+    }
+  };
+
+  //  const handleIncrease = (product) => addToCart(product, 1);
 
   const handleDecrease = (product) => {
-    const qty = getQuantity(product.id);
-    if (qty > 1) updateQuantity(product.id, qty - 1);
-    else removeFromCart(product.id);
+    const qty = getQuantity(product._id);
+    const lineId = getLineItemId(product._id);
+
+    if (qty > 1 && lineId) updateQuantity(lineId, qty - 1);
+    else if (lineId) removeFromCart(lineId);
+  };
+
+  // redirect to /items
+  const redirectToItemsPage = () => {
+    navigate("/items", { state: { category: activeCategory } });
   };
 
   const handleSearch = (term) => {
@@ -118,7 +157,7 @@ function ItemsHome() {
 
         {/* Main Content */}
         <main className={itemsHomeStyles.mainContent}>
-               {/* mobile category scroll */}
+          {/* mobile category scroll */}
           <div className={itemsHomeStyles.mobileCategories}>
             <div className="flex space-x-4">
               {sidebarCategories.map((cat) => (
@@ -128,10 +167,11 @@ function ItemsHome() {
                     setActiveCategory(cat.value || cat.name);
                     searchTerm(" ");
                   }}
-                  className={`${itemsHomeStyles.mobileCategoryItem} ${activeCategory === (cat.value || cat.name) && !searchTerm
-                    ? itemsHomeStyles.activeMobileCategory
-                    : itemsHomeStyles.inactiveMobileCategory
-                    }`}
+                  className={`${itemsHomeStyles.mobileCategoryItem} ${
+                    activeCategory === (cat.value || cat.name) && !searchTerm
+                      ? itemsHomeStyles.activeMobileCategory
+                      : itemsHomeStyles.inactiveMobileCategory
+                  }`}
                 >
                   {cat.name}
                 </button>
@@ -177,12 +217,11 @@ function ItemsHome() {
               searchedProducts.map((product) => {
                 const qty = getQuantity(product.id);
                 return (
-
                   // jfdj
                   <div key={product.id} className={itemsHomeStyles.productCard}>
                     <div className={itemsHomeStyles.productContent}>
                       <img
-                        src={product.image}
+                        src={`http://localhost:8080${product.image}`}
                         alt={product.name}
                         className={`${itemsHomeStyles.productImage} w-full h-40 object-cover rounded-md`}
                         onError={(e) => {

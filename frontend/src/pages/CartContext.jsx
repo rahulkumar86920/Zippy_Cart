@@ -1,68 +1,149 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
 const CartContext = createContext();
 
+const getAuthHeader = () => {
+  const token =
+    localStorage.getItem("authToken") ||
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
+
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+};
+
+const normalizeItems = (rowItems = []) => {
+  return rowItems
+    .map((item) => {
+      const id = item._id || item.productId || item.product?._id;
+      const productId = item.productId || item.product?._id;
+      const name = item.product?.name || item.name || "Unnamed";
+      const price = item.price ?? item.product?.price ?? 0;
+      const imageUrl = item.product?.imageUrl || item.imageUrl || "";
+
+      return {
+        ...item,
+        id,
+        productId,
+        name,
+        price,
+        imageUrl,
+        quantity: item.quantity || 0,
+      };
+    })
+    .filter((item) => item.id != null);
+};
+
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fatchCart();
+  }, []);
+
+  const fatchCart = async () => {
     try {
-      const savedCart = localStorage.getItem("cart");
-      return savedCart ? JSON.parse(savedCart) : [];
+      const { data } = await axios.get("http://localhost:8080/api/cart", {
+        ...getAuthHeader(),
+        withCredentials: true,
+      });
+
+      const rowItems = Array.isArray(data)
+        ? data
+        : Array.isArray(data.item)
+        ? data.items // here plz be carefull
+        : data.cart?.items || [];
+      setCart(normalizeItems(rowItems));
     } catch (error) {
-      return [];
+      console.error("Error in fatching cart", error);
+    } finally {
+      setLoading(false);
     }
-  });
+  };
+
+  const refreshCart = async () => {
+    try {
+      const { data } = await axios.get(
+        "http://localhost:8080/api/cart",
+        getAuthHeader()
+      );
+
+      const rowItems = Array.isArray(data)
+        ? data
+        : Array.isArray(data.items)
+        ? data.items
+        : data.cart?.items || [];
+
+      setCart(normalizeItems(rowItems));
+    } catch (error) {
+      console.error("error in refrshing cart", error);
+    }
+  };
 
   // Add item to cart
-  const addToCart = (item, quantity = 1) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((ci) => ci.id === item.id);
-      if (existingItem) {
-        return prevCart.map((ci) =>
-          ci.id === item.id
-            ? { ...ci, quantity: ci.quantity + quantity }
-            : ci
-        );
-      } else {
-        return [...prevCart, { ...item, quantity }];
-      }
-    });
+  const addToCart = async (productId, quantity = 1) => {
+    try {
+      await axios.post(
+        "http://localhost:8080/api/cart",
+        { productId, quantity },
+        getAuthHeader()
+      );
+      await refreshCart();
+    } catch (error) {
+      console.error("Error in add to cart", error);
+    }
   };
-
-  // Remove item
-  const removeFromCart = (itemId) => {
-    setCart((prevCart) => prevCart.filter((ci) => ci.id !== itemId));
-  };
-
   // Update quantity
-  const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCart((prevCart) =>
-      prevCart.map((ci) =>
-        ci.id === itemId ? { ...ci, quantity: newQuantity } : ci
-      )
-    );
+  const updateQuantity = async (lineId, quantity) => {
+    try {
+      await axios.put(
+        `http://localhost:8080/api/cart/${lineId}`,
+        { quantity },
+        getAuthHeader()
+      );
+      await refreshCart();
+    } catch (error) {
+      console.error("error in updating the cart", error);
+    }
   };
 
-  // Clear cart
-  const clearCart = () => {
-    setCart([]);
+  const removeFromCart = async (lineId) => {
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/cart/${lineId}`,
+        getAuthHeader()
+      );
+      await refreshCart();
+    } catch (error) {}
   };
 
-  // Total cost
+  const clearCart = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8080/api/cart/clear",
+        {},
+        getAuthHeader()
+      );
+      setCart([]);
+    } catch (error) {
+      console.error("clearing cart error", error);
+    }
+  };
+
   const getCartTotal = () =>
-    cart.reduce((total, ci) => total + ci.price * ci.quantity, 0);
-
-  // Total item count
-  const cartCount = cart.reduce((count, ci) => count + ci.quantity, 0);
+    cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <CartContext.Provider
       value={{
         cart,
+        loading,
         cartCount,
         addToCart,
-        removeFromCart,
         updateQuantity,
+        removeFromCart,
         clearCart,
         getCartTotal,
       }}
@@ -74,10 +155,15 @@ export const CartProvider = ({ children }) => {
 
 // Custom hook
 export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
-  }
-  return context;
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be inside cartProvider");
+  return ctx;
 };
-//new
+
+// export const useCart = () => {
+//   const context = useContext(CartContext);
+//   if (!context) {
+//     throw new Error("useCart must be used within a CartProvider");
+//   }
+//   return context;
+// };

@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ["http://localhost:5173", "http://localhost:5173"];
+      const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
