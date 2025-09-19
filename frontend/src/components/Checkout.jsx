@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { checkoutStyles } from "../assets/dummyStyles";
 import { useCart } from "../pages/CartContext";
 import { Link, useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiCreditCard, FiPackage, FiUser } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiCheck,
+  FiCreditCard,
+  FiPackage,
+  FiTruck,
+  FiUser,
+} from "react-icons/fi";
 import axios from "axios";
 
 const Checkout = () => {
@@ -333,7 +340,78 @@ const Checkout = () => {
                 })}
               </div>
             </div>
+            <div className="border-t border-emerald-700/50 pt-4 space-y-4">
+              <div className="flex justify-between">
+                <span className="text-emerald-300">Subtotal</span>
+                <span className="font-medium text-emerald-100">
+                  ₹{total.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-emerald-300">Delivery</span>
+                <span className="text-emerald-400 font-medium">Free</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-emerald-300">Taxes (%5)</span>
+                <span className="text-emerald-100 font-medium">
+                  {" "}
+                  ₹{tax.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="flex justify-between pt-3 mt-3 border-t border-emerald-700/50">
+                <span className="text-emerald-100 text-lg font-bold ">
+                  Total
+                </span>
+                <span className="text-emerald-300 font-bold text-lg">
+                  {" "}
+                  ₹{grandTotal.toFixed(2)}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className={`${checkoutStyles.button}
+              ${
+                isSubmitting
+                  ? checkoutStyles.disabledButton
+                  : checkoutStyles.submitButton
+              }
+                mt-6
+              `}
+            >
+              {isSubmitting ? (
+                <FiCheck className="mr-2 animate-spin" />
+              ) : (
+                <FiCheck className="mr-2" />
+              )}
+              {isSubmitting ? "processing Order" : "Place Order"}
+            </button>
+
+            <p className="text-center text-sm mt-4 text-emerald-400">
+              by placing your order your argee to our{" "}
+              <a href="#" className={checkoutStyles.link}>
+                terms
+              </a>{" "}
+              and{" "}
+              <a href="#" className={checkoutStyles.link}>
+                privacy
+              </a>
+            </p>
           </div>
+        </div>
+        <div className={checkoutStyles.deliveryInfo}>
+          <h3 className={checkoutStyles.deliveryTitle}>
+            <FiTruck className="mr-2" />
+            Delivery Information
+          </h3>
+          <p className={checkoutStyles.deliveryText}>
+            We deliver within 10-15 minutes. Ordera placed after 9PM will be
+            delivered the next morning.
+          </p>
         </div>
       </div>
     </div>
