@@ -72,7 +72,7 @@ function ItemsHome() {
 
   const handleIncrease = (product) => {
     const lineId = getLineItemId(product._id);
-    console.log("product from ItemHome.jsx file", product)
+    // console.log("product from ItemHome.jsx file", product)
     if (lineId) {
       updateQuantity(lineId, getQuantity(product._id) + 1);
     } else {

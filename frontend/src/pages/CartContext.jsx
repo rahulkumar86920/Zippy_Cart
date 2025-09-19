@@ -84,10 +84,10 @@ export const CartProvider = ({ children }) => {
   // Add item to cart
   const addToCart = async (productId, quantity = 1) => {
     try {
-      console.log("this is from CartContext.jsx file:", {
-        productId: productId,
-        quantity: 1,
-      });
+      // console.log("this is from CartContext.jsx file:", {
+      //   productId: productId,
+      //   quantity: 1,
+      // });
       await axios.post(
         "http://localhost:8080/api/cart",
         { productId, quantity },

@@ -24,7 +24,7 @@ export const getCart = async (req, res, next) => {
 export const addToCart = async (req, res, next) => {
   try {
     const { productId, quantity, itemId } = req.body;
-    console.log("Received backend:", req.body);
+    // console.log("Received backend:", req.body);
 
     const pId = productId || itemId;
     if (!pId || typeof quantity !== "number") {
