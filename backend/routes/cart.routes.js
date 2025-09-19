@@ -9,7 +9,7 @@ import {
 } from "../controllers/cart.controller.js";
 
 const cartRouter = express.Router();
-cartRouter.use(authMiddleware);
+// cartRouter.use(authMiddleware);
 
 //routes
 cartRouter.get("/", getCart);

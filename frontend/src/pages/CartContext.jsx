@@ -16,7 +16,7 @@ const normalizeItems = (rowItems = []) => {
   return rowItems
     .map((item) => {
       const id = item._id || item.productId || item.product?._id;
-      const productId = item.productId || item.product?._id;
+      const productId = item.productId || item.product?._id || item.product_id;
       const name = item.product?.name || item.name || "Unnamed";
       const price = item.price ?? item.product?.price ?? 0;
       const imageUrl = item.product?.imageUrl || item.imageUrl || "";
@@ -84,6 +84,10 @@ export const CartProvider = ({ children }) => {
   // Add item to cart
   const addToCart = async (productId, quantity = 1) => {
     try {
+      console.log("this is from CartContext.jsx file:", {
+        productId: productId,
+        quantity: 1,
+      });
       await axios.post(
         "http://localhost:8080/api/cart",
         { productId, quantity },
@@ -94,6 +98,21 @@ export const CartProvider = ({ children }) => {
       console.error("Error in add to cart", error);
     }
   };
+
+  //   const addToCart = async (product, quantity) => {
+  //   try {
+  //     console.log("Sending to cart API:", { productId: product._id, quantity });
+  //     await axios.post("http://localhost:8080/api/cart", {
+  //       productId: product._id,
+  //       quantity,
+  //     },
+  //      getAuthHeader()
+  //   );
+  //   } catch (err) {
+  //     console.error("Error in add to cart", err);
+  //   }
+  // };
+
   // Update quantity
   const updateQuantity = async (lineId, quantity) => {
     try {

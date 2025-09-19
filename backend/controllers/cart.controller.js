@@ -1,35 +1,39 @@
 import cartProductModel from "../models/cart.model.js";
+import createError from "http-errors"; // Added missing import
 
 // get function
 export const getCart = async (req, res, next) => {
   try {
-    const item = await cartProductModel.find({ user: req.user._id }).populate({
-      path: "product",
-      model: "CARTITEM",
+    const item = await cartProductModel.find({ userId: req.user._id }).populate({
+      path: "productId",  // Changed from "product"
+      model: "PRODUCT",   // Changed from "CARTITEM" to "PRODUCT"
     });
 
     const formatted = item.map((ci) => ({
-      _id: ci_id.toString(),
-      product: ci.product,
+      _id: ci._id.toString(),
+      product: ci.productId,  // Changed from ci.product
       quantity: ci.quantity,
     }));
     res.json(formatted);
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 //post method to add to cart item
 export const addToCart = async (req, res, next) => {
   try {
     const { productId, quantity, itemId } = req.body;
-    const pId = productId || itemId;
+    console.log("Received backend:", req.body);
 
+    const pId = productId || itemId;
     if (!pId || typeof quantity !== "number") {
       throw createError(400, "product identifier and quantity required");
     }
 
     const cartItem = await cartProductModel.findOne({
-      user: req.user._id,
-      product: pId,
+      userId: req.user._id,      // Changed from "user"
+      productId: pId,            // Changed from "product"
     });
 
     if (cartItem) {
@@ -42,24 +46,27 @@ export const addToCart = async (req, res, next) => {
         });
       }
       await cartItem.save();
-      await cartItem.populate("product");
+      await cartItem.populate("productId");  // Changed from "product"
       return res.status(200).json({
         _id: cartItem._id.toString(),
-        product: cartItem.product,
+        product: cartItem.productId,         // Changed from cartItem.product
         quantity: cartItem.quantity,
       });
     }
 
-    cartItem = await cartItem.create({
-      user: req.user._id,
-      product: pId,
+    // Create new cart item
+    const newCartItem = await cartProductModel.create({
+      userId: req.user._id,      // Changed from "user"
+      productId: pId,            // Changed from "product"
       quantity,
     });
-    await cartItem.populate("product");
+
+    // Populate the productId field
+    await newCartItem.populate("productId");  // Changed from "product"
     res.status(200).json({
-      _id: cartItem._id.toString(),
-      product: cartItem.product,
-      quantity: cartItem.quantity,
+      _id: newCartItem._id.toString(),
+      product: newCartItem.productId,         // Changed from newCartItem.product
+      quantity: newCartItem.quantity,
     });
   } catch (error) {
     next(error);
@@ -72,7 +79,7 @@ export const updateCartItem = async (req, res, next) => {
     const { quantity } = req.body;
     const cartItem = await cartProductModel.findOne({
       _id: req.params.id,
-      user: req.user._id,
+      userId: req.user._id,      // Changed from "user"
     });
 
     if (!cartItem) {
@@ -81,10 +88,10 @@ export const updateCartItem = async (req, res, next) => {
 
     cartItem.quantity = Math.max(1, quantity);
     await cartItem.save();
-    await cartItem.populate("product");
+    await cartItem.populate("productId");    // Changed from "product"
     res.json({
       _id: cartItem._id.toString(),
-      product: cartItem.product,
+      product: cartItem.productId,           // Changed from cartItem.product
       quantity: cartItem.quantity,
     });
   } catch (error) {
@@ -97,7 +104,7 @@ export const deleteCartItem = async (req, res, next) => {
   try {
     const cartItem = await cartProductModel.findOne({
       _id: req.params.id,
-      user: req.user._id,
+      userId: req.user._id,      // Changed from "user"
     });
     if (!cartItem) {
       throw createError(404, "cart item not found");
@@ -112,11 +119,11 @@ export const deleteCartItem = async (req, res, next) => {
   }
 };
 
-// creal cart method
+// clear cart method
 export const clearCart = async (req, res, next) => {
   try {
-    await cartProductModel.deleteMany({ user: req.user._id });
-    res.json({ message: " Cart cleared" });
+    await cartProductModel.deleteMany({ userId: req.user._id }); // Changed from "user"
+    res.json({ message: "Cart cleared" });
   } catch (error) {
     next(error);
   }
