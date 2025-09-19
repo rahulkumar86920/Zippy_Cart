@@ -98,21 +98,7 @@ export const CartProvider = ({ children }) => {
       console.error("Error in add to cart", error);
     }
   };
-
-  //   const addToCart = async (product, quantity) => {
-  //   try {
-  //     console.log("Sending to cart API:", { productId: product._id, quantity });
-  //     await axios.post("http://localhost:8080/api/cart", {
-  //       productId: product._id,
-  //       quantity,
-  //     },
-  //      getAuthHeader()
-  //   );
-  //   } catch (err) {
-  //     console.error("Error in add to cart", err);
-  //   }
-  // };
-
+  
   // Update quantity
   const updateQuantity = async (lineId, quantity) => {
     try {
@@ -178,11 +164,3 @@ export const useCart = () => {
   if (!ctx) throw new Error("useCart must be inside cartProvider");
   return ctx;
 };
-
-// export const useCart = () => {
-//   const context = useContext(CartContext);
-//   if (!context) {
-//     throw new Error("useCart must be used within a CartProvider");
-//   }
-//   return context;
-// };

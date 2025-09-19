@@ -13,9 +13,13 @@ const CartPage = () => {
   const getItemName = (item) =>
     item.name ?? item.product?.name ?? "Unnamed item";
   const getItemImage = (item) => {
-    const path = item.image ?? item.product?.imageUrl ?? "";
-    return path ? `http://localhost:8080${path}` : "";
-  };
+  const path =
+    item.image ??
+    item.product?.image ??
+    item.product?.imageUrl ?? "";
+  return path ? `http://localhost:8080${path}` : "/no-image.png";
+};
+
 
   // subTotal
   const subTotal = cart.reduce((sum, item) => {
@@ -75,7 +79,7 @@ const CartPage = () => {
           <div className={cartStyles.cartItemsSection}>
             <div className={cartStyles.cartItemsGrid}>
               {cart.map((item) => {
-                const id = item.id;
+                const id = item._id; // instead of item.id
                 const name = getItemName(item);
                 const price = getItemPrice(item);
                 const img = getItemImage(item);
@@ -107,7 +111,7 @@ const CartPage = () => {
                     <div className={cartStyles.cartItemQuantityContainer}>
                       <button
                         className={cartStyles.cartItemQuantityButton}
-                        onClick={handleQuantityChange(id, -1)}
+                        onClick={() => handleQuantityChange(id, -1)}
                       >
                         <FiMinus />
                       </button>
@@ -115,7 +119,7 @@ const CartPage = () => {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={handleQuantityChange(id, 1)}
+                        onClick={() => handleQuantityChange(id, 1)}
                         className={cartStyles.cartItemQuantityButton}
                       >
                         <FiPlus />
@@ -174,7 +178,7 @@ const CartPage = () => {
 
                 {/* this is for the checkout button */}
                 <button className={cartStyles.checkoutButton}>
-                  Proceed to checkout
+                  <Link to="/checkout">Proceed to Checkout</Link>
                 </button>
 
                 <div className={cartStyles.continueShoppingBottom}>
@@ -183,7 +187,6 @@ const CartPage = () => {
                     Continue Shopping
                   </Link>
                 </div>
-                
               </div>
             </div>
           </div>

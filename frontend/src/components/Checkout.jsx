@@ -1,4 +1,5 @@
 import React from 'react'
+import checkoutStyles from "../assets/dummyStyles"
 
 const Checkout = () => {
   return (
