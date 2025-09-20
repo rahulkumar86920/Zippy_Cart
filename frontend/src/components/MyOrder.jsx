@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ordersPageStyles } from "./../assets/dummyStyles";
-import { FiArrowLeft, FiPackage, FiSearch ,FiX} from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiMail,
+  FiMapPin,
+  FiPackage,
+  FiPhone,
+  FiSearch,
+  FiUser,
+  FiX,
+} from "react-icons/fi";
 
 const MyOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -181,31 +190,80 @@ const MyOrder = () => {
         </div>
       </div>
       {/* order detail model */}
-      {
-        isDetailModalOpen && selectedOrder &&(
-          <div className={ordersPageStyles.modalOverlay}>
-            <div className={ordersPageStyles.modalContainer}>
-                {/*   modal header */}
-                <div className={ordersPageStyles.modalHeader}>
-                    <div className="flex justify-between items-center">
-                        <h2 className={ordersPageStyles.modalTitle}>
-                          Order Details {selectedOrder._id}
-                        </h2>
-                        <button 
-                        className={ordersPageStyles.modalCloseButton}
-                        onClick={closeModel}
-                        >
-                            <FiX size={24}/>
-                        </button>
+      {isDetailModalOpen && selectedOrder && (
+        <div className={ordersPageStyles.modalOverlay}>
+          <div className={ordersPageStyles.modalContainer}>
+            {/*   modal header */}
+            <div className={ordersPageStyles.modalHeader}>
+              <div className="flex justify-between items-center">
+                <h2 className={ordersPageStyles.modalTitle}>
+                  Order Details {selectedOrder._id}
+                </h2>
+                <button
+                  className={ordersPageStyles.modalCloseButton}
+                  onClick={closeModel}
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+              <p className="text-emerald-300 mt-1">
+                Ordered on {selectedOrder.date}
+              </p>
+            </div>
+            {/* modal body */}
+            <div className={ordersPageStyles.modalBody}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* left side */}
+                <div>
+                  <div className={ordersPageStyles.modalSection}>
+                    <h3 className={ordersPageStyles.modalSectionTitle}>
+                      <FiUser className="mr-2 text-emerald-300" />
+                      My Information
+                    </h3>
+
+                    <div className={ordersPageStyles.modalCard}>
+                      <div className="mb-3">
+                        <div className="font-medium text-emerald-100">
+                          {selectedOrder.customer.name}
+                        </div>
+
+                        <div className="text-emerald-300 flex items-center mt-2">
+                          <FiMail className="mr-2 flex-shrink-0" />
+                          {selectedOrder.customer.email || "No Email Found"}
+                        </div>
+
+                        <div className="text-emerald-300 flex items-center mt-2">
+                          <FiPhone className="mr-2 flex-shrink-0" />
+                          {selectedOrder.customer.phone || "No Phone No Found"}
+                        </div>
+                      </div>
+                      <div className="flex items-start mt-3">
+                        <FiMapPin className="text-emerald-400 mr-2 mt-1 flex-shrink-0 " />
+                        <div className="text-emerald-300">
+                          {selectedOrder.customer.address}
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-emerald-300 mt-1">
-                      Ordered on {selectedOrder.date}
-                    </p>
+                  </div>
+                  {/* order notes */}
+                  {selectedOrder.customer.notes && (
+                    <div className={ordersPageStyles.modalSection}>
+                      <h3 className={ordersPageStyles.modalSectionTitle}>
+                        Delivery Notes
+                      </h3>
+                      <div className="bg-emerald-800/50 border-1-4 border-emerald-400 p-4 rounded-l-lg">
+                        <p className="text-emerald-200">
+                          {selectedOrder.customer.notes}{" "}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
+              </div>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
     </div>
   );
 };
