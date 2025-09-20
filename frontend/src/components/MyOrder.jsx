@@ -26,7 +26,7 @@ const MyOrder = () => {
   const fetchAndFilterOrders = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/orders");
-      console.log("Orders from backend:", res.data); // 👈 add this line
+      // console.log("Orders from backend:", res.data); // 👈 add this line
       const allOrders = res.data;
 
       const mine = allOrders.filter(
@@ -259,8 +259,45 @@ const MyOrder = () => {
                     </div>
                   )}
                 </div>
+                {/* right side  */}
+                <div>
+                  <div className={ordersPageStyles.modalSection}>
+                    <h3 className={ordersPageStyles.modalSectionTitle}>
+                      <FiPackage className="mr-2 text-emerald-300" />
+                      Order summary
+                    </h3>
+
+                    <div className="border bg-emerald-700 rounded-xl overflow-hidden">
+                      {selectedOrder.items.map((item, index) => 
+                   
+                      (
+                        <div
+                          key={item._id || index}
+                          className={`flex items-center p-4 bg-emerald-700/30 
+                             ${
+                               index !== selectedOrder.items.length - 1
+                                 ? "border-b border-emerald-700"
+                                 : " "
+                             }`}
+                        >
+                          {item.imageUrl ? (
+                            <img
+                              src={`http://localhost:8080${item.imageUrl}`}
+                              alt={item.name}
+                              className="w-16 h-16 object-cover rounded-lg mr-4"
+                            />
+                          ) : (
+                            <div className=" bg-emerald-800 border-2 border-dashed border-emerald-700 rounded-xl w-16 h-16 mr-4 flex items-center justify-center">
+                              <FiPackage className="text-emerald-500" /> 
+                            </div>
+                          )} { console.log("Image URL:", item) }
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </div>  
           </div>
         </div>
       )}
