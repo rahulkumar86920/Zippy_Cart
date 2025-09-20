@@ -57,13 +57,20 @@ const Checkout = () => {
 
     const order = {
       customer: { ...formData },
+      // items: cart.map((item) => ({
+      //   id: item.productId || item.id,
+      //   name: item.name,
+      //   price: item.price,
+      //   quantity: item.quantity,
+      //   imageUrl: item.image || item.imageUrl,
+      // })),
       items: cart.map((item) => ({
-        id: item.productId || item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        imageUrl: item.image || item.imageUrl,
-      })),
+  id: item.productId || item.id,
+  name: item.product?.name || item.name, // ✅ Get from product
+  price: item.product?.price || item.price, // ✅ Get from product  
+  quantity: item.quantity,
+  imageUrl: item.product?.imageUrl || item.product?.image || item.image || item.imageUrl, // ✅ Get from product
+})),
       total: getCartTotal(),
       status: "Pending",
       paymentMethod: formData.paymentMethod,

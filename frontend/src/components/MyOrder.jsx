@@ -33,6 +33,8 @@ const MyOrder = () => {
         (o) => o.customer?.email?.toLowerCase() === userEmail.toLowerCase()
       );
 
+      console.log("My orders:", mine); // 👈 Add this
+      console.log("User email:", userEmail); // 👈 Add this
       setOrders(mine);
     } catch (error) {
       console.error("Error in fatching the order", error);
@@ -268,9 +270,7 @@ const MyOrder = () => {
                     </h3>
 
                     <div className="border bg-emerald-700 rounded-xl overflow-hidden">
-                      {selectedOrder.items.map((item, index) => 
-                   
-                      (
+                      {selectedOrder.items.map((item, index) => (
                         <div
                           key={item._id || index}
                           className={`flex items-center p-4 bg-emerald-700/30 
@@ -288,16 +288,17 @@ const MyOrder = () => {
                             />
                           ) : (
                             <div className=" bg-emerald-800 border-2 border-dashed border-emerald-700 rounded-xl w-16 h-16 mr-4 flex items-center justify-center">
-                              <FiPackage className="text-emerald-500" /> 
+                              <FiPackage className="text-emerald-500" />
                             </div>
-                          )} { console.log("Image URL:", item) }
+                          )}{" "}
+                          {console.log("Image URL:", item)}
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>  
+            </div>
           </div>
         </div>
       )}
