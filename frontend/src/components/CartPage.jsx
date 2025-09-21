@@ -13,13 +13,10 @@ const CartPage = () => {
   const getItemName = (item) =>
     item.name ?? item.product?.name ?? "Unnamed item";
   const getItemImage = (item) => {
-  const path =
-    item.image ??
-    item.product?.image ??
-    item.product?.imageUrl ?? "";
-  return path ? `http://localhost:8080${path}` : "/no-image.png";
-};
-
+    const path =
+      item.image ?? item.product?.image ?? item.product?.imageUrl ?? "";
+    return path ? `http://localhost:8080${path}` : "/no-image.png";
+  };
 
   // subTotal
   const subTotal = cart.reduce((sum, item) => {
@@ -153,7 +150,7 @@ const CartPage = () => {
                 {/* this is for the shipping fee */}
                 <div className={cartStyles.orderSummaryRow}>
                   <span className={cartStyles.orderSummaryLabel}>
-                    Shipping{" "}
+                    Delivery charge{" "}
                   </span>
                   <span className={cartStyles.orderSummaryValue}>Free</span>
                 </div>

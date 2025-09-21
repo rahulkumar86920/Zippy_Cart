@@ -117,7 +117,7 @@ const Checkout = () => {
   const tax = total * 0.05;
   const grandTotal = total + tax;
 
-  console.log("cart", cart);
+  // console.log("cart", cart);
 
   return (
     <div className={checkoutStyles.page}>

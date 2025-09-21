@@ -3,11 +3,13 @@ import axios from "axios";
 import { ordersPageStyles } from "./../assets/dummyStyles";
 import {
   FiArrowLeft,
+  FiCreditCard,
   FiMail,
   FiMapPin,
   FiPackage,
   FiPhone,
   FiSearch,
+  FiTruck,
   FiUser,
   FiX,
 } from "react-icons/fi";
@@ -199,7 +201,7 @@ const MyOrder = () => {
             <div className={ordersPageStyles.modalHeader}>
               <div className="flex justify-between items-center">
                 <h2 className={ordersPageStyles.modalTitle}>
-                  Order Details {selectedOrder._id}
+                  Order Details :  {selectedOrder._id}
                 </h2>
                 <button
                   className={ordersPageStyles.modalCloseButton}
@@ -290,13 +292,124 @@ const MyOrder = () => {
                             <div className=" bg-emerald-800 border-2 border-dashed border-emerald-700 rounded-xl w-16 h-16 mr-4 flex items-center justify-center">
                               <FiPackage className="text-emerald-500" />
                             </div>
-                          )}{" "}
-                          {console.log("Image URL:", item)}
+                          )}
+
+                          {/* {console.log("Image URL:", item)} */}
+                          <div className="flex-grow">
+                            <div className="font-medium to-emerald-100">
+                              {item.name}
+                            </div>
+                            <div className="text-emerald-400">
+                              ₹{item.price.toFixed(2)} * {item.quantity}
+                            </div>
+                          </div>
+                          <div className="font-medium to-emerald-100">
+                            ₹{(item.price * item.quantity).toFixed(2)}
+                          </div>
                         </div>
                       ))}
+                      {/* order totals */}
+                      <div className="p-4 bg-emerald-800/50">
+                        <div className="flex justify-between py-2">
+                          <span className="text-emerald-300">Subtotal</span>
+                          <span className="font-medium text-emerald-100">
+                            ₹{selectedOrder.total.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between py-2">
+                          <span className="text-emerald-300">
+                            Delivery charge
+                          </span>
+                          <span className="font-medium text-emerald-400">
+                            Free
+                          </span>
+                        </div>
+                        <div className="flex justify-between py-2">
+                          <span className="text-emerald-300">Taxes (5%)</span>
+                          <span className="font-medium text-emerald-100">
+                            ₹{(selectedOrder.total * 0.05).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between pt-4 mt-2 border-t border-emerald-700">
+                          <span className="text-lg font-bold text-emerald-100">
+                            Total
+                          </span>
+                          <span className="text-lg font-bold text-emerald-300">
+                            ₹{(selectedOrder.total * 1.05).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* payment and shipping info  */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* payment info */}
+                    <div>
+                      <h3 className={ordersPageStyles.modalSectionTitle}>
+                        <FiCreditCard className="mr-2 text-emerald-300" />
+                        Payment
+                      </h3>
+                      <div className={ordersPageStyles.modalCard}>
+                        <div className="flex justify-between m-3">
+                          <span className="text-emerald-300">Method:</span>{" "}
+                          {"   "}
+                          <span className="font-medium text-emerald-100">
+                            {selectedOrder.paymentMethod}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-emerald-300">Status</span>{" "}
+                          {"   "}
+                          <span
+                            className={`px-2 rounded-full test-xs font-medium ${
+                              selectedOrder.paymentStatus === "Paid"
+                                ? "bg-emerald-500/20 text-emerald-200"
+                                : "bg-red-500/20 text-red-200"
+                            }`}
+                          >
+                            {selectedOrder.paymentStatus}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* shipping information */}
+                    <div>
+                      <h3 className={ordersPageStyles.modalSectionTitle}>
+                        <FiTruck className="mr-2 text-emerald-300" />
+                        Shipping
+                      </h3>
+                      <div className={ordersPageStyles.modalCard}>
+                        <div className="flex justify-between mb-3">
+                          <span className="text-emerald-300">Status :</span>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              selectedOrder.status === "Delivered"
+                                ? "bg-emerald-500/20 text-emerald-200"
+                                : selectedOrder.status === "Shipped"
+                                ? "bg-blue-500/20 text-blue-200"
+                                : selectedOrder.status === "Cancelled"
+                                ? "bg-red-500/20 text-red-200"
+                                : "bg-amber-500/20 text-amber-200"
+                            }`}
+                          >
+                            {selectedOrder.status}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            {/* modal footer */}
+            <div className={ordersPageStyles.modalFooter}>
+              <div className="flex justify-end">
+                <button
+                  onClick={closeModel}
+                  className={ordersPageStyles.closeButton}
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
