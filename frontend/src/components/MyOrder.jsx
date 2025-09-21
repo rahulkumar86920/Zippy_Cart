@@ -35,8 +35,8 @@ const MyOrder = () => {
         (o) => o.customer?.email?.toLowerCase() === userEmail.toLowerCase()
       );
 
-      console.log("My orders:", mine); // 👈 Add this
-      console.log("User email:", userEmail); // 👈 Add this
+      // console.log("My orders:", mine); 
+      // console.log("User email:", userEmail); 
       setOrders(mine);
     } catch (error) {
       console.error("Error in fatching the order", error);
