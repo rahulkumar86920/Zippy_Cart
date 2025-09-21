@@ -61,7 +61,7 @@ const ProductCart = ({ item }) => {
       {/* item description */}
       <div className={itemsPageStyles.cardContent}>
         <div className={itemsPageStyles.titleContainer}>
-          <h3 className={itemsPageStyles.titleContainer}>{item.name}</h3>
+          <h3 className={itemsPageStyles.productTitle}>{item.name}</h3>
           <span className={itemsPageStyles.organicTag}> Organic</span>
         </div>
         <p className={itemsPageStyles.productDescription}>
