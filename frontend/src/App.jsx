@@ -17,6 +17,7 @@ import Signup from "./components/Signup.jsx";
 import Navbar from "./components/Navbar";
 import MyOrder from "./components/MyOrder.jsx";
 import Checkout from "./components/Checkout.jsx";
+import VerifyPaymentPage from "./pages/VerifyPaymentPage.jsx";
 
 const ScrollToTop = () => {
   const { pathName } = useLocation();
@@ -57,6 +58,7 @@ const App = () => {
           }
         />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/myorders/verify" element={<VerifyPaymentPage />} />
         <Route path="/myorders" element={<MyOrder />} />
 
         {/* Auth Routes */}
