@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { navbarStyles } from "../assets/dummyStyles";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/wide_Assortment.png";
+import logo from "../assets/Wide_Assortment.png";
 import { FaOpencart } from "react-icons/fa";
 import { navItems } from "../assets/Dummy";
 import { FiMenu, FiUser, FiX } from "react-icons/fi";

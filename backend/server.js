@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ["http://localhost:5173", "https://zippy-cart-admin.onrender.com"];
+      const allowedOrigins = ["https://zippy-cart-frontend.onrender.com", "https://zippy-cart-admin.onrender.com"];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
