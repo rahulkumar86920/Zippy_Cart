@@ -83,7 +83,7 @@ const Checkout = () => {
 
     try {
       const token = localStorage.getItem("authToken");
-      const res = await axios.post("http://localhost:8080/api/orders", order, {
+      const res = await axios.post("https://zippy-cart-backend.onrender.com/api/orders", order, {
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
@@ -306,7 +306,7 @@ const Checkout = () => {
                   const imageSrc = rawImage
                     ? rawImage.startsWith("http")
                       ? rawImage
-                      : `http://localhost:8080${rawImage}`
+                      : `https://zippy-cart-backend.onrender.com${rawImage}`
                     : null;
 
                   return (

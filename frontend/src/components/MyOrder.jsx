@@ -27,7 +27,7 @@ const MyOrder = () => {
   //fatching orders
   const fetchAndFilterOrders = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/orders");
+      const res = await axios.get("https://zippy-cart-backend.onrender.com/api/orders");
       // console.log("Orders from backend:", res.data); // 👈 add this line
       const allOrders = res.data;
 
@@ -284,7 +284,7 @@ const MyOrder = () => {
                         >
                           {item.imageUrl ? (
                             <img
-                              src={`http://localhost:8080${item.imageUrl}`}
+                              src={`https://zippy-cart-backend.onrender.com${item.imageUrl}`}
                               alt={item.name}
                               className="w-16 h-16 object-cover rounded-lg mr-4"
                             />

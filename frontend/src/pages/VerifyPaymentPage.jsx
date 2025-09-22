@@ -30,7 +30,7 @@ const VerifyPaymentPage = () => {
 
     // call backend confirm endpoint
     axios
-      .get(`http://localhost:8080/api/orders/confirm`, {
+      .get(`https://zippy-cart-backend.onrender.com/api/orders/confirm`, {
         params: { session_id },
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })

@@ -71,7 +71,7 @@ const Signup = () => {
 
     try {
         const res = await axios.post(
-             "http://localhost:8080/api/user/register",
+             "https://zippy-cart-backend.onrender.com/api/user/register",
             {
                 name : formData.name,
                 email : formData.email,

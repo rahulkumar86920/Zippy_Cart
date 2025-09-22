@@ -29,7 +29,7 @@ function ItemsHome() {
   // fatch products from backend
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/items")
+      .get("https://zippy-cart-backend.onrender.com/api/items")
       .then((res) => {
         const normalized = res.data.map((p) => ({
           ...p,
@@ -221,7 +221,7 @@ function ItemsHome() {
                   <div key={product.id} className={itemsHomeStyles.productCard}>
                     <div className={itemsHomeStyles.productContent}>
                       <img
-                        src={`http://localhost:8080${product.image}`}
+                        src={`https://zippy-cart-backend.onrender.com${product.image}`}
                         alt={product.name}
                         className={`${itemsHomeStyles.productImage} w-full h-40 object-cover rounded-md`}
                         onError={(e) => {

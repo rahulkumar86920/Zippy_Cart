@@ -35,7 +35,7 @@ const OrdersPage = () => {
 
   const fatchOrders = async () => {
     try {
-      const { data } = await axios.get("http://localhost:8080/api/orders");
+      const { data } = await axios.get("https://zippy-cart-backend.onrender.com/api/orders");
       setOrders(data);
       setFilteredOrders(data);
     } catch (error) {
@@ -72,7 +72,7 @@ const OrdersPage = () => {
   // update the orders
   const updateOrdersStatus = async (orderId, newStatus) => {
     try {
-      await axios.put(`http://localhost:8080/api/orders/${orderId}`, {
+      await axios.put(`https://zippy-cart-backend.onrender.com/api/orders${orderId}`, {
         status: newStatus,
       });
 
@@ -407,7 +407,7 @@ const OrdersPage = () => {
                       >
                         {item.imageUrl ? (
                           <img
-                            src={`http://localhost:8080${item.imageUrl}`}
+                            src={`https://zippy-cart-backend.onrender.com${item.imageUrl}`}
                             alt={item.name}
                             className={styles.modalOrderImage}
                           />

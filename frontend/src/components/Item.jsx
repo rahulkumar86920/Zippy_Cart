@@ -14,7 +14,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { groceryData } from "./../assets/dummyDataItem";
 
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = "https://zippy-cart-backend.onrender.com";
 
 //product cart
 const ProductCart = ({ item }) => {

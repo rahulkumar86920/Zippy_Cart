@@ -15,7 +15,7 @@ const CartPage = () => {
   const getItemImage = (item) => {
     const path =
       item.image ?? item.product?.image ?? item.product?.imageUrl ?? "";
-    return path ? `http://localhost:8080${path}` : "/no-image.png";
+    return path ? `https://zippy-cart-backend.onrender.com${path}` : "/no-image.png";
   };
 
   // subTotal

@@ -60,7 +60,7 @@ const AddItemPage = () => {
         body.append("image", formData.image);
       }
 
-      const res = await axios.post("http://localhost:8080/api/items", body, {
+      const res = await axios.post("https://zippy-cart-backend.onrender.com/api/items", body, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("Created ", res.data);

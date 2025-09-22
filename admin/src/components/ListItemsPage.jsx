@@ -26,13 +26,13 @@ const ListItemsPage = () => {
   useEffect(() => {
     const loadItem = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/items");
+        const response = await axios.get("https://zippy-cart-backend.onrender.com/api/items");
         const data = response.data;
 
         const withUrls = data.map((item) => ({
           ...item,
           imageUrl: item.image
-            ? `http://localhost:8080${item.image}`
+            ? `https://zippy-cart-backend.onrender.com${item.image}`
             : null,
         }));
 
@@ -65,7 +65,7 @@ const ListItemsPage = () => {
     if (!window.confirm("Delete this product")) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/items/${id}`);
+      await axios.delete(`https://zippy-cart-backend.onrender.com/api/items/${id}`);
       setItems((prev) => prev.filter((i) => i._id !== id));
       setFilteredItem((prev) => prev.filter((i) => i._id !== id));
     } catch (error) {
