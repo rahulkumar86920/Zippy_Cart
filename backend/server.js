@@ -43,9 +43,80 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.get("/", (req, res) => {
-  res.send(
-    "please keep this tab open in order to keep the server running, fronend end will not work otherwise, thank you, frontend will open in 3 seconds if not please click on the link https://zippy-cart-frontend.onrender.com"
-  );
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>ZippyCart Backend</title>
+      <style>
+        body {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: #f4f6f8;
+          color: #333;
+          text-align: center;
+        }
+        .container {
+          max-width: 500px;
+          background: #fff;
+          padding: 25px 20px;
+          border-radius: 12px;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+          animation: fadeIn 0.6s ease-in-out;
+        }
+        h1 {
+          font-size: 22px;
+          margin-bottom: 10px;
+          color: #007BFF;
+        }
+        p {
+          font-size: 15px;
+          line-height: 1.6;
+          margin: 0 0 15px;
+        }
+        a {
+          display: inline-block;
+          margin-top: 10px;
+          padding: 10px 15px;
+          background: #007BFF;
+          color: #fff;
+          text-decoration: none;
+          border-radius: 6px;
+          transition: background 0.3s ease;
+        }
+        a:hover {
+          background: #0056b3;
+        }
+        @keyframes fadeIn {
+          from {opacity: 0;}
+          to {opacity: 1;}
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1> ZippyCart Backend Running</h1>
+        <p>Please keep this tab open to keep the server running.<br>
+        The frontend will open automatically in 3 seconds.<br>
+        If not, click the button below.</p>
+        <a href="https://zippy-cart-frontend.onrender.com" target="_blank">Go to Frontend</a>
+      </div>
+      <script>
+        // Automatically open frontend after 3 seconds
+        setTimeout(() => {
+          window.open("https://zippy-cart-frontend.onrender.com", "_blank");
+        }, 3000);
+      </script>
+    </body>
+    </html>
+  `);
 });
 
 app.use("/api/user", userRouter); // register and login
