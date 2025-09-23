@@ -24,7 +24,10 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ["https://zippy-cart-frontend.onrender.com", "https://zippy-cart-admin.onrender.com"];
+      const allowedOrigins = [
+        "https://zippy-cart-frontend.onrender.com",
+        "https://zippy-cart-admin.onrender.com",
+      ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -40,7 +43,9 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.get("/", (req, res) => {
-  res.send("Api is working");
+  res.send(
+    "please keep this tab open in order to keep the server running, fronend end will not work otherwise, thank you, frontend will open in 3 seconds if not please click on the link https://zippy-cart-frontend.onrender.com"
+  );
 });
 
 app.use("/api/user", userRouter); // register and login
