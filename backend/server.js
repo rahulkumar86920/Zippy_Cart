@@ -120,7 +120,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRouter); // register and login
-app.use("/api/cart", authMiddleware, cartRouter);
+app.use("/api/cart",  cartRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/items", itemrouter); // cretae, get, and delete products from admin panel
 app.use("/api/orders", orderRouter);
