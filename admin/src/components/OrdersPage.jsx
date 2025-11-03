@@ -72,7 +72,7 @@ const OrdersPage = () => {
   // update the orders
   const updateOrdersStatus = async (orderId, newStatus) => {
     try {
-      await axios.put(`https://zippy-cart-backend.onrender.com/api/orders${orderId}`, {
+      await axios.put(`https://zippy-cart-backend.onrender.com/api/orders/${orderId}`, {
         status: newStatus,
       });
 
