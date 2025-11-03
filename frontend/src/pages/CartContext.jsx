@@ -91,7 +91,7 @@ export const CartProvider = ({ children }) => {
       await axios.post(
         "https://zippy-cart-backend.onrender.com/api/cart",
         { productId, quantity },
-        getAuthHeader()
+        //getAuthHeader()  // here was made a change
       );
       await refreshCart();
     } catch (error) {

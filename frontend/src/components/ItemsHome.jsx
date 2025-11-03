@@ -14,7 +14,7 @@ import { categories } from "../assets/dummyData.jsx";
 import axios from "axios";
 
 function ItemsHome() {
-  const [products, setProducts] = useState([]);    
+  const [products, setProducts] = useState([]);
 
   const [activeCategory, setActiveCategory] = useState(() => {
     return localStorage.getItem("activeCategory") || "All";
@@ -29,7 +29,9 @@ function ItemsHome() {
   // fatch products from backend
   useEffect(() => {
     axios
-      .get("https://zippy-cart-backend.onrender.com/api/items")
+      .get(
+          "https://zippy-cart-backend.onrender.com/api/items"
+      )
       .then((res) => {
         const normalized = res.data.map((p) => ({
           ...p,
@@ -64,7 +66,7 @@ function ItemsHome() {
     const item = cart.find((ci) => ci.productId === productId);
     return item ? item.quantity : 0;
   };
- 
+
   const getLineItemId = (productId) => {
     const item = cart.find((ci) => ci.productId === productId);
     return item ? item.id : null;
@@ -217,7 +219,7 @@ function ItemsHome() {
               searchedProducts.map((product) => {
                 const qty = getQuantity(product.id);
                 return (
-                  // jfdj
+                  // product information
                   <div key={product.id} className={itemsHomeStyles.productCard}>
                     <div className={itemsHomeStyles.productContent}>
                       <img

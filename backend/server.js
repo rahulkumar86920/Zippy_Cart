@@ -27,6 +27,7 @@ app.use(
       const allowedOrigins = [
         "https://zippy-cart-frontend.onrender.com",
         "https://zippy-cart-admin.onrender.com",
+        
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
