@@ -150,7 +150,7 @@ const MyOrder = () => {
                         {order.orderId || order._id}
                       </td>
                       <td className={`${ordersPageStyles.tableCell} text-sm`}>
-                        {order.date}
+                       {" "} {order.date}
                       </td>
                       <td
                         className={`${ordersPageStyles.tableCell} text-emerald-100`}

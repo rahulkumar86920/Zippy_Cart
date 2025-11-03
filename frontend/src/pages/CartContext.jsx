@@ -42,7 +42,7 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, []);
 
-  // ✅ Fetch cart (from backend if logged in, else from localStorage)
+  //  Fetch cart (from backend if logged in, else from localStorage)
   const fetchCart = async () => {
     const authHeader = getAuthHeader();
 
@@ -98,11 +98,11 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ Add item to cart
+  //  Add item to cart
   const addToCart = async (productId, quantity = 1, productData = {}) => {
     const authHeader = getAuthHeader();
 
-    // 🟢 If not logged in → store in localStorage
+    //  If not logged in → store in localStorage
     if (!authHeader) {
       const localCart = JSON.parse(localStorage.getItem("guestCart")) || [];
       const existingItemIndex = localCart.findIndex(
@@ -127,7 +127,7 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    // 🟢 If logged in → send to backend
+    //  If logged in → send to backend
     try {
       await axios.post(
         "https://zippy-cart-backend.onrender.com/api/cart",
@@ -140,7 +140,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ Update quantity
+  //  Update quantity
   const updateQuantity = async (lineId, quantity) => {
     const authHeader = getAuthHeader();
     if (!authHeader) return; // Only logged-in user can update cart from backend
@@ -157,7 +157,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ Remove item from cart
+  //  Remove item from cart
   const removeFromCart = async (lineId) => {
     const authHeader = getAuthHeader();
 
@@ -181,7 +181,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ Clear cart
+  //  Clear cart
   const clearCart = async () => {
     const authHeader = getAuthHeader();
 
@@ -203,7 +203,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ Cart totals
+  //  Cart totals
   const getCartTotal = () =>
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -227,7 +227,7 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// ✅ Custom hook
+//  Custom hook
 export const useCart = () => {
   const ctx = useContext(CartContext);
   if (!ctx) throw new Error("useCart must be used inside CartProvider");

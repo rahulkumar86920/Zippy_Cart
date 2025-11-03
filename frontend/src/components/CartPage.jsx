@@ -1,196 +1,262 @@
-import React from "react";
-import { useCart } from "../pages/CartContext";
-import { cartStyles } from "../assets/dummyStyles";
-import { Link } from "react-router-dom";
-import { FaArrowLeft, FaCross } from "react-icons/fa";
-import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
-const CartPage = () => {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+const CartContext = createContext();
+const API_URL = "https://zippy-cart-backend.onrender.com";
 
-  // Helpers to pull fields from either item.* or item.product.*
-  const getItemPrice = (item) => item.price ?? item.product?.price ?? 0;
-  const getItemName = (item) =>
-    item.name ?? item.product?.name ?? "Unnamed item";
-  const getItemImage = (item) => {
-    const path =
-      item.image ?? item.product?.image ?? item.product?.imageUrl ?? "";
-    return path ? `https://zippy-cart-backend.onrender.com${path}` : "/no-image.png" ;
+const getAuthHeader = () => {
+  const token =
+    localStorage.getItem("authToken") ||
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
+
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+};
+
+// Normalize backend cart items
+const normalizeItems = (rowItems = []) => {
+  return rowItems
+    .map((item) => {
+      const id = item._id || item.productId || item.product?._id;
+      const productId = item.productId || item.product?._id || item.product_id;
+      const name = item.product?.name || item.name || "Unnamed Product";
+      const price = item.price ?? item.product?.price ?? 0;
+      const imageUrl = item.product?.imageUrl || item.imageUrl || item.image || "";
+
+      return {
+        ...item,
+        id,
+        productId,
+        name,
+        price,
+        imageUrl,
+        quantity: item.quantity || 1,
+      };
+    })
+    .filter((item) => item.id != null);
+};
+
+export const CartProvider = ({ children }) => {
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const isLoggedIn = () => {
+    return (
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token")
+    );
   };
 
-  // subTotal
-  const subTotal = cart.reduce((sum, item) => {
-    return sum + getItemPrice(item) * item.quantity;
-  }, 0);
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
-  const handleQuantityChange = async (id, delta) => {
-    const item = cart.find((i) => i.id === id);
-    if (!item) return;
+  // Fetch cart depending on login state
+  const fetchCart = async () => {
+    try {
+      const token = isLoggedIn();
 
-    const newQty = item.quantity + delta;
-    if (newQty > 0) {
-      await updateQuantity(id, newQty);
-    } else {
-      await removeFromCart(id);
+      if (!token) {
+        // Load guest cart from localStorage
+        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+        setCart(guestCart);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch logged-in user's cart
+      const { data } = await axios.get(`${API_URL}/api/cart`, {
+        ...getAuthHeader(),
+        withCredentials: true,
+      });
+
+      const rowItems = Array.isArray(data)
+        ? data
+        : Array.isArray(data.items)
+        ? data.items
+        : data.cart?.items || [];
+
+      setCart(normalizeItems(rowItems));
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // if the cart is empty then this code will execute
-  if (cart.length === 0) {
-    return (
-      <div className={`${cartStyles.pageContainer} pt-25`}>
-        {" "}
-        {/* Added padding */}
-        <div className={cartStyles.maxContainer}>
-          <Link to="/items" className={cartStyles.continueShopping}>
-            <FaArrowLeft className="mr-2" />
-            Continue Shopping
-          </Link>
-          <div className={cartStyles.emptyCartContainer}>
-            <div className={cartStyles.emptyCartIcon}>🛒</div>
-            <h1 className={cartStyles.emptyCartHeading}>Your Cart Is Empty</h1>
-            <p className={cartStyles.emptyCartText}>
-              Looks like you haven't added something in the cart yet :)
-            </p>
-            <Link to="/items" className={cartStyles.emptyCartButton}>
-              Browse Product
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Refresh backend cart after modification
+  const refreshCart = async () => {
+    if (!isLoggedIn()) return; // Skip for guests
+    try {
+      const { data } = await axios.get(`${API_URL}/api/cart`, getAuthHeader());
+      const rowItems = Array.isArray(data)
+        ? data
+        : Array.isArray(data.items)
+        ? data.items
+        : data.cart?.items || [];
+      setCart(normalizeItems(rowItems));
+    } catch (error) {
+      console.error("Error refreshing cart:", error);
+    }
+  };
+
+  //  Add to Cart (guest + logged-in)
+  const addToCart = async (product, quantity = 1) => {
+    const token = isLoggedIn();
+
+    if (!token) {
+      // GUEST CART LOGIC
+      const existing = cart.find((i) => i.id === product._id);
+      let updatedCart;
+
+      if (existing) {
+        updatedCart = cart.map((i) =>
+          i.id === product._id ? { ...i, quantity: i.quantity + quantity } : i
+        );
+      } else {
+        updatedCart = [
+          ...cart,
+          {
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            imageUrl: product.image || product.imageUrl || "",
+            quantity,
+          },
+        ];
+      }
+
+      setCart(updatedCart);
+      localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+      return;
+    }
+
+    // LOGGED-IN CART LOGIC
+    try {
+      await axios.post(
+        `${API_URL}/api/cart`,
+        { productId: product._id, quantity },
+        getAuthHeader()
+      );
+      await refreshCart();
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+  //  Update quantity
+  const updateQuantity = async (lineId, quantity) => {
+    const token = isLoggedIn();
+
+    if (!token) {
+      // Guest update
+      const updated = cart.map((item) =>
+        item.id === lineId ? { ...item, quantity } : item
+      );
+      setCart(updated);
+      localStorage.setItem("guestCart", JSON.stringify(updated));
+      return;
+    }
+
+    try {
+      await axios.put(
+        `${API_URL}/api/cart/${lineId}`,
+        { quantity },
+        getAuthHeader()
+      );
+      await refreshCart();
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
+  };
+
+  //  Remove from cart
+  const removeFromCart = async (lineId) => {
+    const token = isLoggedIn();
+
+    if (!token) {
+      // Guest remove
+      const updated = cart.filter((item) => item.id !== lineId);
+      setCart(updated);
+      localStorage.setItem("guestCart", JSON.stringify(updated));
+      return;
+    }
+
+    try {
+      await axios.delete(`${API_URL}/api/cart/${lineId}`, getAuthHeader());
+      await refreshCart();
+    } catch (error) {
+      console.error("Error removing from cart:", error);
+    }
+  };
+
+  //  Clear entire cart
+  const clearCart = async () => {
+    const token = isLoggedIn();
+
+    if (!token) {
+      setCart([]);
+      localStorage.removeItem("guestCart");
+      return;
+    }
+
+    try {
+      await axios.post(`${API_URL}/api/cart/clear`, {}, getAuthHeader());
+      setCart([]);
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  };
+
+  //  Merge guest cart into backend after login
+  const mergeGuestCart = async () => {
+    const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
+    if (guestCart.length === 0 || !isLoggedIn()) return;
+
+    try {
+      for (const item of guestCart) {
+        await axios.post(
+          `${API_URL}/api/cart`,
+          { productId: item.id, quantity: item.quantity },
+          getAuthHeader()
+        );
+      }
+      localStorage.removeItem("guestCart");
+      await refreshCart();
+    } catch (error) {
+      console.error("Error merging guest cart:", error);
+    }
+  };
+
+  const getCartTotal = () =>
+    cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className={cartStyles.pageContainer}>
-      <div className={cartStyles.maxContainerLarge}>
-        <div className={cartStyles.headerContainer}>
-          <h1 className={cartStyles.headerTitle}>Your Shopping Cart</h1>
-          <button onClick={clearCart} className={cartStyles.clearCartButton}>
-            <FiTrash2 className="mr-1" />
-            Clear Cart
-          </button>
-        </div>
-
-        <div className={cartStyles.cartGrid}>
-          <div className={cartStyles.cartItemsSection}>
-            <div className={cartStyles.cartItemsGrid}>
-              {cart.map((item) => {
-                const id = item._id; // instead of item.id
-                const name = getItemName(item);
-                const price = getItemPrice(item);
-                const img = getItemImage(item);
-
-                return (
-                  <div key={id} className={cartStyles.cartItemCard}>
-                    <div className={cartStyles.cartItemImageContainer}>
-                      {img ? (
-                        <img
-                          src={img}
-                          alt={name}
-                          className={cartStyles.cartItemImage}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/no-image.png";
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 rounded-md">
-                          No Image
-                        </div>
-                      )}
-                    </div>
-                    <h3 className={cartStyles.cartItemName}>{name}</h3>
-                    <p className={cartStyles.cartItemPrice}>
-                      ₹{price.toFixed(2)}
-                    </p>
-
-                    <div className={cartStyles.cartItemQuantityContainer}>
-                      <button
-                        className={cartStyles.cartItemQuantityButton}
-                        onClick={() => handleQuantityChange(id, -1)}
-                      >
-                        <FiMinus />
-                      </button>
-                      <span className={cartStyles.cartItemQuantity}>
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => handleQuantityChange(id, 1)}
-                        className={cartStyles.cartItemQuantityButton}
-                      >
-                        <FiPlus />
-                      </button>
-                    </div>
-                    <button
-                      onClick={() => removeFromCart(id)}
-                      className={cartStyles.cartItemRemoveButton}
-                    >
-                      <FiTrash2 className="mr-1" /> Remove
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className={cartStyles.orderSummaryCard}>
-              <h2 className={cartStyles.orderSummaryTitle}> Order Summary</h2>
-
-              <div className="space-y-4 text-sm sm:text-base">
-                {/* this is for the product amount  */}
-                <div className={cartStyles.orderSummaryRow}>
-                  <span className={cartStyles.orderSummaryLabel}>Subtotal</span>
-                  <span className={cartStyles.orderSummaryValue}>
-                    ₹{subTotal.toFixed(2)}
-                  </span>
-                </div>
-                {/* this is for the shipping fee */}
-                <div className={cartStyles.orderSummaryRow}>
-                  <span className={cartStyles.orderSummaryLabel}>
-                    Delivery charge{" "}
-                  </span>
-                  <span className={cartStyles.orderSummaryValue}>Free</span>
-                </div>
-                {/* this is for the Goverbment taxes */}
-                <div className={cartStyles.orderSummaryRow}>
-                  <span className={cartStyles.orderSummaryLabel}>
-                    Taxes (%5)
-                  </span>
-                  <span className={cartStyles.orderSummaryValue}>
-                    ₹{(subTotal * 0.05).toFixed(2)}
-                  </span>
-                </div>
-
-                <div className={cartStyles.orderSummaryDivider} />
-                {/* this is for the total amount  */}
-                <div className={cartStyles.orderSummaryTotalRow}>
-                  <span className={cartStyles.orderSummaryLabel}>Total</span>
-                  <span className={cartStyles.orderSummaryTotalValue}>
-                    ₹{(subTotal * 1.05).toFixed(2)}
-                  </span>
-                </div>
-
-                {/* this is for the checkout button */}
-                <button className={cartStyles.checkoutButton}>
-                  <Link to="/checkout">Proceed to Checkout</Link>
-                </button>
-
-                <div className={cartStyles.continueShoppingBottom}>
-                  <Link to="/items" className={cartStyles.continueShopping}>
-                    <FaArrowLeft className="mr-2" />
-                    Continue Shopping
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <CartContext.Provider
+      value={{
+        cart,
+        loading,
+        cartCount,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        clearCart,
+        getCartTotal,
+        fetchCart,
+        mergeGuestCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
   );
 };
 
-export default CartPage;
+// Custom hook
+export const useCart = () => {
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used within CartProvider");
+  return ctx;
+};

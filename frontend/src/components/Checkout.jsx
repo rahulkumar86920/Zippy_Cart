@@ -416,7 +416,7 @@ const Checkout = () => {
             Delivery Information
           </h3>
           <p className={checkoutStyles.deliveryText}>
-            We deliver within 10-15 minutes. Ordera placed after 9PM will be
+            We deliver within 10-15 minutes. Order placed after 9PM will be
             delivered the next morning.
           </p>
         </div>
