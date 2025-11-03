@@ -9,7 +9,7 @@ const getAuthHeader = () => {
     localStorage.getItem("token") ||
     sessionStorage.getItem("token");
 
-  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : null;
 };
 
 const normalizeItems = (rowItems = []) => {
@@ -17,9 +17,9 @@ const normalizeItems = (rowItems = []) => {
     .map((item) => {
       const id = item._id || item.productId || item.product?._id;
       const productId = item.productId || item.product?._id || item.product_id;
-      const name = item.product?.name || item.name || "Unnamed Product";
-      const price = item.price ?? item.product?.price ?? 0;
-      const imageUrl = item.product?.imageUrl || item.imageUrl || item.image || "";
+      const name = item.product?.name ?? item.name ?? "Unnamed Product";
+      const price = item.product?.price ?? item.price ?? 0;
+      const imageUrl = item.product?.imageUrl ?? item.imageUrl ?? "";
 
       return {
         ...item,
@@ -28,7 +28,7 @@ const normalizeItems = (rowItems = []) => {
         name,
         price,
         imageUrl,
-        quantity: item.quantity || 1,
+        quantity: item.quantity ?? 1,
       };
     })
     .filter((item) => item.id != null);
@@ -38,34 +38,26 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isLoggedIn = () => {
-    return (
-      localStorage.getItem("authToken") ||
-      localStorage.getItem("token") ||
-      sessionStorage.getItem("token")
-    );
-  };
-
   useEffect(() => {
     fetchCart();
   }, []);
 
+  //  Fetch cart (from backend if logged in, else from localStorage)
   const fetchCart = async () => {
+    const authHeader = getAuthHeader();
+
+    if (!authHeader) {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+      setCart(guestCart);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const token = isLoggedIn();
-
-      if (!token) {
-        // Guest cart
-        const guestCart = JSON.parse(localStorage.getItem("guestCart") || "[]");
-        setCart(guestCart);
-        setLoading(false);
-        return;
-      }
-
       const { data } = await axios.get(
         "https://zippy-cart-backend.onrender.com/api/cart",
         {
-          ...getAuthHeader(),
+          ...authHeader,
           withCredentials: true,
         }
       );
@@ -78,20 +70,20 @@ export const CartProvider = ({ children }) => {
 
       setCart(normalizeItems(rowItems));
     } catch (error) {
-      console.error("Error in fetching cart", error);
+      console.error("Error fetching cart", error);
     } finally {
       setLoading(false);
     }
   };
 
   const refreshCart = async () => {
-    const token = isLoggedIn();
-    if (!token) return;
+    const authHeader = getAuthHeader();
+    if (!authHeader) return;
 
     try {
       const { data } = await axios.get(
         "https://zippy-cart-backend.onrender.com/api/cart",
-        getAuthHeader()
+        authHeader
       );
 
       const rowItems = Array.isArray(data)
@@ -102,107 +94,100 @@ export const CartProvider = ({ children }) => {
 
       setCart(normalizeItems(rowItems));
     } catch (error) {
-      console.error("error in refreshing cart", error);
+      console.error("Error refreshing cart", error);
     }
   };
 
-  // ✅ Add item to cart
-  const addToCart = async (product, quantity = 1) => {
-    const token = isLoggedIn();
+  //  Add item to cart
+  const addToCart = async (productId, quantity = 1, productData = {}) => {
+    const authHeader = getAuthHeader();
 
-    if (!token) {
-      // Guest cart
-      const existing = cart.find((i) => i.id === product._id);
-      let updatedCart;
+    //  If not logged in → store in localStorage
+    if (!authHeader) {
+      const localCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+      const existingItemIndex = localCart.findIndex(
+        (item) => item.productId === productId
+      );
 
-      if (existing) {
-        updatedCart = cart.map((i) =>
-          i.id === product._id
-            ? { ...i, quantity: i.quantity + quantity }
-            : i
-        );
+      if (existingItemIndex >= 0) {
+        localCart[existingItemIndex].quantity += quantity;
       } else {
-        updatedCart = [
-          ...cart,
-          {
-            id: product._id,
-            name: product.name,
-            price: product.price,
-            imageUrl: product.image || product.imageUrl || "",
-            quantity,
-          },
-        ];
+        localCart.push({
+          id: productId,
+          productId,
+          name: productData.name || "Unnamed Product",
+          price: productData.price || 0,
+          imageUrl: productData.imageUrl || "",
+          quantity,
+        });
       }
 
-      setCart(updatedCart);
-      localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+      localStorage.setItem("guestCart", JSON.stringify(localCart));
+      setCart(localCart);
       return;
     }
 
+    //  If logged in → send to backend
     try {
       await axios.post(
         "https://zippy-cart-backend.onrender.com/api/cart",
-        { productId: product._id, quantity },
-        getAuthHeader()
+        { productId, quantity },
+        authHeader
       );
       await refreshCart();
     } catch (error) {
-      console.error("Error in add to cart", error);
+      console.error("Error adding to cart", error);
     }
   };
 
-  // ✅ Update quantity
+  //  Update quantity
   const updateQuantity = async (lineId, quantity) => {
-    const token = isLoggedIn();
-
-    if (!token) {
-      const updated = cart.map((item) =>
-        item.id === lineId ? { ...item, quantity } : item
-      );
-      setCart(updated);
-      localStorage.setItem("guestCart", JSON.stringify(updated));
-      return;
-    }
+    const authHeader = getAuthHeader();
+    if (!authHeader) return; // Only logged-in user can update cart from backend
 
     try {
       await axios.put(
         `https://zippy-cart-backend.onrender.com/api/cart/${lineId}`,
         { quantity },
-        getAuthHeader()
+        authHeader
       );
       await refreshCart();
     } catch (error) {
-      console.error("error in updating the cart", error);
+      console.error("Error updating cart quantity", error);
     }
   };
 
+  //  Remove item from cart
   const removeFromCart = async (lineId) => {
-    const token = isLoggedIn();
+    const authHeader = getAuthHeader();
 
-    if (!token) {
-      const updated = cart.filter((item) => item.id !== lineId);
-      setCart(updated);
-      localStorage.setItem("guestCart", JSON.stringify(updated));
+    // Guest cart removal
+    if (!authHeader) {
+      const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+      const updatedCart = guestCart.filter((item) => item.productId !== lineId);
+      localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+      setCart(updatedCart);
       return;
     }
 
     try {
       await axios.delete(
         `https://zippy-cart-backend.onrender.com/api/cart/${lineId}`,
-        getAuthHeader()
+        authHeader
       );
       await refreshCart();
     } catch (error) {
-      console.error("Error removing item", error);
+      console.error("Error removing from cart", error);
     }
   };
 
+  //  Clear cart
   const clearCart = async () => {
-    const token = isLoggedIn();
+    const authHeader = getAuthHeader();
 
-    if (!token) {
-      setCart([]);
+    if (!authHeader) {
       localStorage.removeItem("guestCart");
+      setCart([]);
       return;
     }
 
@@ -210,16 +195,18 @@ export const CartProvider = ({ children }) => {
       await axios.post(
         "https://zippy-cart-backend.onrender.com/api/cart/clear",
         {},
-        getAuthHeader()
+        authHeader
       );
       setCart([]);
     } catch (error) {
-      console.error("clearing cart error", error);
+      console.error("Error clearing cart", error);
     }
   };
 
+  //  Cart totals
   const getCartTotal = () =>
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -240,9 +227,9 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// Custom hook
+//  Custom hook
 export const useCart = () => {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error("useCart must be inside cartProvider");
+  if (!ctx) throw new Error("useCart must be used inside CartProvider");
   return ctx;
 };
