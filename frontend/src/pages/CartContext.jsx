@@ -39,11 +39,11 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchCart();
+    fatchCart();
   }, []);
 
   //  Fetch cart (from backend if logged in, else from localStorage)
-  const fetchCart = async () => {
+  const fatchCart = async () => {
     const authHeader = getAuthHeader();
 
     if (!authHeader) {
@@ -64,8 +64,8 @@ export const CartProvider = ({ children }) => {
 
       const rowItems = Array.isArray(data)
         ? data
-        : Array.isArray(data.items)
-        ? data.items
+        : Array.isArray(data.item)
+        ? data.item
         : data.cart?.items || [];
 
       setCart(normalizeItems(rowItems));
@@ -88,8 +88,8 @@ export const CartProvider = ({ children }) => {
 
       const rowItems = Array.isArray(data)
         ? data
-        : Array.isArray(data.items)
-        ? data.items
+        : Array.isArray(data.item)
+        ? data.item
         : data.cart?.items || [];
 
       setCart(normalizeItems(rowItems));
@@ -157,7 +157,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  //  Remove item from cart
+  // Remove item from cart
   const removeFromCart = async (lineId) => {
     const authHeader = getAuthHeader();
 
